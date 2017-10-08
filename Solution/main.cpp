@@ -24,16 +24,33 @@ int main(int argc, char* argv[]) {
 	}
 	if (source_code == NULL) {
 		help();
+		exit(EXIT_SUCCESS);
 	}
 	else if (source_code->fail()) {
 		cout << "Error opening source code";
 		exit(EXIT_FAILURE);
 	}
+
+	Tokenizer* tokenizer = new Tokenizer(source_code);
+	Token* token = NULL;
+	while ((token = tokenizer->next()) && token->get_type() != END_OF_PROGRAM) {
+		token->print();
+	}
+	if (token) {
+		token->print();
+	}
+
+	if (lexer_only) {
+		source_code->close();
+		exit(EXIT_SUCCESS);
+	}
+
+	source_code->close();
 }
 
 void help() {
 	cout << "Pascal compiler" << endl;
 	cout << "Author: Alexander Chori<alexandrchori@gmail.com>, 2017" << endl;
-	cout << "Usage: solution [/l] file_name" << endl;
+	cout << "Usage: solution.exe [/l] file_name" << endl;
 	cout << "  /l - lexical analysis only" << endl;
 }

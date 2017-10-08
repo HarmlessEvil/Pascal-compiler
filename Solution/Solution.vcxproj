@@ -22,6 +22,7 @@
     <ProjectGuid>{27680D7E-BEDF-4923-9A1E-EF57D9F8F6DF}</ProjectGuid>
     <RootNamespace>Solution</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <ProjectName>Pascal</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

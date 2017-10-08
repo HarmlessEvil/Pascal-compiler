@@ -1,3 +1,8 @@
-﻿  Token.cpp
-  Solution.vcxproj -> D:\Projects\Pascal-compiler\Solution\Debug\Solution.exe
-  Solution.vcxproj -> D:\Projects\Pascal-compiler\Solution\Debug\Solution.pdb (Partial PDB)
+﻿C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\Microsoft.CppBuild.targets(392,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (Solution.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+  Token.cpp
+  Создание кода...
+  Пропуск... (изменения не обнаружены)
+  main.cpp
+  Tokenizer.cpp
+  Solution.vcxproj -> D:\Projects\Pascal-compiler\Solution\Debug\Pascal.exe
+  Solution.vcxproj -> D:\Projects\Pascal-compiler\Solution\Debug\Pascal.pdb (Partial PDB)
