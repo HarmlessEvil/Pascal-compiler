@@ -17,6 +17,9 @@ Token::Token(string_coord pos) : position_in_string(pos), type(INVALID)
 
 Token::~Token()
 {
+	if (value) {
+		delete value;
+	}
 }
 
 void Token::setText(std::string text)
@@ -26,7 +29,19 @@ void Token::setText(std::string text)
 
 void Token::setValue(void* value)
 {
-	this->value = value;
+	switch (type) {
+	case INTEGER:
+		this->value = new long long int;
+		memcpy(this->value, value, sizeof(long long int));
+		break;
+	case FLOAT:
+		this->value = new long double;
+		memcpy(this->value, value, sizeof(long double));
+		break;
+	default:
+		this->value = value;
+		break;
+	}
 }
 
 void Token::setType(TOKEN_TYPES type)
@@ -41,7 +56,7 @@ void Token::print()
 	const int  classWidth = 30;
 	const int  valueWidth = 15;
 	const int  textWidth  = 40;
-	ostringstream pos_string;
+	ostringstream pos_string, length_string;
 
 	pos_string << '(' << position_in_string.row << ", " << position_in_string.col << ')';
 	cout << left << setw(posWidth) << setfill(' ') << pos_string.str();
@@ -63,13 +78,17 @@ void Token::print()
 		cout << "Floating point number";
 		break;
 	case STRING:
-		cout << "String (" << text.length() << ')';
+		length_string << "String (" << text.length() - 2 << ')';
+		cout << length_string.str();
 		break;
 	case OPERATOR:
 		cout << "Operator";
 		break;
 	case DELIMETER:
 		cout << "Delimeter";
+		break;
+	case RANGE:
+		cout << "Range";
 		break;
 	case END_OF_PROGRAM:
 		cout << "End of program";
@@ -82,6 +101,9 @@ void Token::print()
 
 	cout << left << setw(valueWidth) << setfill(separator);
 	switch (type) {
+	case INTEGER:
+		cout << *(static_cast<long long int*>(value));
+		break;
 	case FLOAT:
 		cout << *(static_cast<long double*>(value));
 		break;

@@ -1,0 +1,3 @@
+true is true.
+False if faLse
+var varn_____ame__1 is strange

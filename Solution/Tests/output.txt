@@ -1,2 +1,24 @@
-(1, 1)    Keyword                       begin          begin                                   
-(2, 1)    Keyword                       end            end                                     
+(1, 1)    String (47)                   'Enquoted quotes to quotes $AES 1e5017 + - - +''Enquoted quotes to quotes $AES 1e5017 + - - +'
+(1, 47)   Delimeter                     ;              ;                                       
+(2, 2)    Unreserved identifier         letter         letter                                  
+(2, 9)    Operator                      :=             :=                                      
+(2, 12)   Unreserved identifier         my_string      my_string                               
+(2, 21)   Delimeter                     [              [                                       
+(2, 22)   Integer                       34             34                                      
+(2, 24)   Delimeter                     ]              ]                                       
+(2, 25)   Delimeter                     ;              ;                                       
+(3, 2)    Reserved identifier           WriteLn        WriteLn                                 
+(3, 9)    Delimeter                     (              (                                       
+(3, 10)   Unreserved identifier         my_string      my_string                               
+(3, 19)   Delimeter                     )              )                                       
+(3, 20)   Delimeter                     ;              ;                                       
+(4, 2)    Unreserved identifier         wrtieln        wrtieln                                 
+(4, 9)    Delimeter                     (              (                                       
+(4, 10)   Unreserved identifier         letter         letter                                  
+(4, 16)   Delimeter                     )              )                                       
+(4, 17)   Delimeter                     ;              ;                                       
+(6, 2)    Reserved identifier           readLN         readLN                                  
+(6, 8)    Delimeter                     (              (                                       
+(6, 9)    Delimeter                     )              )                                       
+(6, 10)   Delimeter                     ;              ;                                       
+(7, 1)    End of program                end.           end.                                    

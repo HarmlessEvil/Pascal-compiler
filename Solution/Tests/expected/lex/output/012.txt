@@ -1,0 +1,4 @@
+(1, 1)    Integer                       699050         $AAAAA                                  
+(3, 1)    Integer                       16449455       $FAFFAF                                 
+(5, 1)    Integer                       35294          $89DE                                   
+(7, 1)    Integer                       9357583027931434$213eac1456092a                         

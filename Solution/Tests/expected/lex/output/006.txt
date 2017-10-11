@@ -1,0 +1,4 @@
+(1, 11)   Delimeter                     .              .                                       
+(1, 19)   Integer                       9              9                                       
+(1, 21)   Keyword                       begin          begin                                   
+(1, 27)   End of program                end.           end.                                    

@@ -6,7 +6,7 @@
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LocalDebuggerCommandArguments>/l "D:\Projects\Pascal-compiler\Solution\Tests\expected\lex\004.txt"</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>/l "D:\Projects\Pascal-compiler\Solution\Tests\expected\lex\006.txt"</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
 </Project>
