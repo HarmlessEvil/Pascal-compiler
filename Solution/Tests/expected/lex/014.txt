@@ -1,0 +1,5 @@
+begin
+
+ a a AA {$FA}
+
+end.

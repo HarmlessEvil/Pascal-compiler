@@ -1,0 +1,6 @@
+(1, 1)    Floating point number         0.2            0.2                                     
+(2, 1)    Delimeter                     .              .                                       
+(2, 2)    Integer                       2              2                                       
+(3, 1)    Floating point number         2              2.                                      
+(5, 2)    Unreserved identifier         a              a                                       
+(7, 1)    Floating point number         2.6584         2.6584                                  
