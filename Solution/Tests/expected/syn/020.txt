@@ -1,0 +1,6 @@
+program A;
+begin
+	x := 7;
+	begin
+	end
+end.

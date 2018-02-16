@@ -1,0 +1,8 @@
+program A;
+begin
+	if a > 3 then
+	begin
+		x := 1;
+		y := z
+	end
+end.

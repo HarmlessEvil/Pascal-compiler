@@ -1,0 +1,2 @@
+program Asasel1;
+begin end.

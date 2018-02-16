@@ -1,0 +1,11 @@
+var
+  a: 1 .. 5;
+  b: 'C' .. 'z';
+
+begin
+
+  writeln(a[2]);
+  writeln(b['k']);
+  readln();
+
+end.

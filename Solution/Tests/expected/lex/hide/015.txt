@@ -1,0 +1,8 @@
+begin
+// begin
+{begin}
+(*begin*)
+{begin (*end*)}
+(*begin{end}*)
+//{begin}
+end.

@@ -1,0 +1,4 @@
+program A;
+begin
+	a := cos(y);
+end.

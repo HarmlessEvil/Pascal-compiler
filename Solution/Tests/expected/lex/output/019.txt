@@ -1,12 +1,1 @@
-(1, 1)    Delimeter                     (              (                                       
-(1, 2)    Integer                       1              1                                       
-(1, 3)    Delimeter                     ,              ,                                       
-(1, 5)    Integer                       2              2                                       
-(1, 6)    Delimeter                     )              )                                       
-(1, 7)    Delimeter                     :              :                                       
-(1, 9)    Keyword                       var            var                                     
-(1, 13)   Unreserved identifier         x              x                                       
-(1, 15)   Keyword                       for            for                                     
-(1, 19)   Unreserved identifier         i              i                                       
-(1, 21)   Operator                      in             in                                      
-(1, 24)   Keyword                       unit           unit                                    
+Syntax error at (1, 1): Missing 'begin'

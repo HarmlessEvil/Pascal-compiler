@@ -1,0 +1,4 @@
+program A;
+begin
+	writeln(a.x);
+end.

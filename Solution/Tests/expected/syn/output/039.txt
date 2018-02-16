@@ -1,0 +1,9 @@
+program
+À--A
+À--the program
+|  À--block
+|  |  À--writeln
+|  |  |  À--(
+|  |  |  |  À--a
+|  |  |  |  |  À--.
+|  |  |  |  |  |  À--x

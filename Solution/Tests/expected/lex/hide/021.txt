@@ -1,0 +1,7 @@
+'Enquoted quotes to quotes $AES 1e5017 + - - +';
+	letter := my_string[34];
+	WriteLn(my_string);
+	wrtieln(letter);
+
+	readLN();
+end.

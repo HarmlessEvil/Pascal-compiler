@@ -1,0 +1,8 @@
+program A;
+begin
+	x := 7;
+	begin
+		x := 1000;
+		y := 1;
+	end
+end.

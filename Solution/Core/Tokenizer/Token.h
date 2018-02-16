@@ -3,33 +3,43 @@
 #include <string>
 
 namespace LexicalAnalyzer{
-	enum TOKEN_TYPES { INVALID, KEYWORD, RESERVED_IDENTIFIER, UNRESERVED_IDENTIFIER, INTEGER, FLOAT, STRING, OPERATOR, DELIMETER, RANGE, END_OF_PROGRAM };
+	enum TokenType { INVALID, KEYWORD, RESERVED_IDENTIFIER, UNRESERVED_IDENTIFIER, INTEGER, FLOAT, STRING, OPERATOR, DELIMETER, RANGE, PROGRAM_HEADING, SEMICOLON,
+		ENDOFFILE, BEGIN_KEYWORD, END_KEYWORD, ASSIGNMENT_OPERATOR, DOT, WHILE_HEADING, RELATIONAL_OPERATOR, DO_KEYWORD, REPEAT_HEADING, UNTIL_KEYWORD, FOR_HEADING,
+		FOR_UP_KEYWORD, FOR_DOWN_KEYWORD, IF_HEADING, THEN_KEYWORD, ELSE_KEYWORD, ADDITION_OPERATOR, MULTIPLICATION_OPERATOR, NIL, LSBRACE, RSBRACE, COMMA, LBRACE, RBRACE, PLUS_OPERATOR,
+		MINUS_OPERATOR, OR_OPERATOR, MUL_OPERATOR, FDIV_OPERATOR, IDIV_OPERATOR, MOD_OPERATOR, AND_OPERATOR, EQUALS_RELATION_OPERATOR, NOT_EQUALS_RELATIONAL_OPERATOR, LESS_RELATIONAL_OPERATOR,
+		LESS_OR_EQUALS_RELATIONAL_OPERATOR, GREATER_RELATIONAL_OPERATOR, GREATER_OR_EQUALS_RELATIONAL_OPERATOR, IN_RELATIONAL_OPERATOR, PROGRAM_BLOCK, CONST_DEFINITION_KEYWORD, 
+		DECLARATION_TYPE};
 
 	class Token
 	{
 	public:
-		struct string_coord {
+		struct StringCoord {
 			int col, row;
 		};
 
-		Token(string_coord, TOKEN_TYPES, std::string, void*);
-		Token(string_coord);
+		Token(StringCoord, TokenType, std::string, void*);
+		Token(StringCoord);
 		~Token();
 
 		void setText(std::string);
 		void setValue(void*);
-		void setType(TOKEN_TYPES);
+		void setType(TokenType);
 
 		void print();
 
-		string_coord get_position_in_string();
-		TOKEN_TYPES get_type();
+		StringCoord getPositionInString();
+		TokenType getType();
+		TokenType getSubType();
+		std::string getText();
+
+		bool operator==(const char*);
+		bool operator!=(const char*);
 		
 	private:
 		std::string text;
 		void* value;
-		TOKEN_TYPES type;
+		TokenType type;
 
-		string_coord position_in_string;
+		StringCoord position_in_string;
 	};
 }

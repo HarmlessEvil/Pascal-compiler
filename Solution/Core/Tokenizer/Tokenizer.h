@@ -20,10 +20,10 @@ namespace LexicalAnalyzer {
 		void print_error(int);
 
 		std::ifstream* file;
-		Token::string_coord curr_pos;
+		Token::StringCoord curr_pos;
 		Token* last_token;
 
-		static const std::map<std::string, TOKEN_TYPES> keywords;
+		static const std::map<std::string, TokenType> keywords;
 		static const std::unordered_set<std::string> operators;
 		static const std::unordered_set<char> operators_parts;
 	};

@@ -1,0 +1,4 @@
+program A;
+begin
+	y := a[5,    3];
+end.

@@ -1,6 +1,1 @@
-(1, 1)    Unreserved identifier         a              a                                       
-(1, 2)    Delimeter                     ,              ,                                       
-(1, 4)    Unreserved identifier         b              b                                       
-(1, 5)    Delimeter                     :              :                                       
-(1, 7)    Unreserved identifier         c              c                                       
-(1, 8)    Delimeter                     ;              ;                                       
+Syntax error at (1, 1): Missing 'begin'

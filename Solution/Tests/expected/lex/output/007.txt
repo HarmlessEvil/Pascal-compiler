@@ -1,6 +1,1 @@
-(1, 1)    Keyword                       begin          begin                                   
-(3, 1)    Unreserved identifier         be             be                                      
-(3, 3)    Delimeter                     .              .                                       
-(5, 1)    Keyword                       begin          begin                                   
-(5, 6)    Delimeter                     .              .                                       
-(7, 1)    End of program                end.           end.                                    
+Syntax error at (3, 3): Expected identifier

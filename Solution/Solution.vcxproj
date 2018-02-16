@@ -111,11 +111,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Core\SemanticAnalyzer\SemanticAnalyzer.cpp" />
+    <ClCompile Include="Core\SyntaxAnalizer\Node.cpp" />
+    <ClCompile Include="Core\SyntaxAnalizer\SyntaxAnalizer.cpp" />
     <ClCompile Include="Core\Tokenizer\Token.cpp" />
     <ClCompile Include="Core\Tokenizer\Tokenizer.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Core\SemanticAnalyzer\SemanticAnalyzer.h" />
+    <ClInclude Include="Core\SyntaxAnalizer\Node.h" />
+    <ClInclude Include="Core\SyntaxAnalizer\SyntaxAnalizer.h" />
     <ClInclude Include="Core\Tokenizer\Errors.h" />
     <ClInclude Include="Core\Tokenizer\Token.h" />
     <ClInclude Include="Core\Tokenizer\Tokenizer.h" />

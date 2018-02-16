@@ -1,0 +1,11 @@
+var
+	a, b, expr: double;
+
+begin
+
+2 * a;
+b -= 3;
+a := 3e-15 * (b - -);.,,,.
+expr << int(expr);
+
+end.

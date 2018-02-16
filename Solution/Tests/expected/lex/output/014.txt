@@ -1,5 +1,1 @@
-(1, 1)    Keyword                       begin          begin                                   
-(3, 2)    Unreserved identifier         a              a                                       
-(3, 4)    Unreserved identifier         a              a                                       
-(3, 6)    Unreserved identifier         AA             AA                                      
-(5, 1)    End of program                end.           end.                                    
+Syntax error at (3, 4): Illegal exprression

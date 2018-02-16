@@ -1,0 +1,16 @@
+(1, 1)    Keyword                       var            var                                     
+(2, 3)    Unreserved identifier         a              a                                       
+(2, 4)    Delimeter                     :              :                                       
+(2, 6)    Reserved identifier           integer        integer                                 
+(2, 13)   Delimeter                     ;              ;                                       
+(4, 1)    Keyword                       begin          begin                                   
+(6, 3)    Unreserved identifier         a              a                                       
+(6, 5)    Operator                      :=             :=                                      
+(6, 8)    Integer                       36929          0110101                                 
+(6, 16)   Delimeter                     ;              ;                                       
+(7, 3)    Reserved identifier           writeln        writeln                                 
+(7, 10)   Delimeter                     (              (                                       
+(7, 11)   Unreserved identifier         a              a                                       
+(7, 12)   Delimeter                     )              )                                       
+(7, 13)   Delimeter                     ;              ;                                       
+(9, 1)    End of program                end.           end.                                    

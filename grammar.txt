@@ -1,0 +1,134 @@
+program
+	[program-heading] block `.`
+
+program-heading
+	`program` identifier
+
+block
+	declaration-part statement-part
+
+declaration-part
+	constant-definition-part
+
+constant-definition-part
+	`const` constant-definition `;`
+
+constant-definition
+	identifier `=` constant-expression
+
+statement-part
+	`begin` statement-sequence `end`
+
+statement-sequence
+	statement {`;` statement}
+
+statement
+	(simple-statement | structured-statement)
+
+simple-statement
+	[assingment-statement | procedure-statement]
+
+procedure-statement
+	identifier [actual-parameter-list]
+
+actual-parameter-list
+	`(` actual-parameter {`,` actual-parameter} `)`
+
+constant-actual-parameter-list
+	`(` constant-actual-parameter {`,` constant-actual-parameter} `)`
+
+actual-parameter
+	expression | variable | identifier	
+
+constant-actual-parameter
+	constant-expression | constant-entire-variable
+
+structured-statement
+	compound-statement | repititive-statement | if-statement
+
+if-statement
+	`if` expression `then` statement [`else` statement]
+
+repeatitive-statement
+	while-statement | repeat-statement | for-statement
+
+for-statement
+	`for` identifier `:=` expression (`to` | `downto`) expression `do` statement
+
+while-statement	
+	`while` expression `do` statement
+
+repeat-statement
+	`repeat` statement-sequence `until` expression	
+
+compound-statement
+	`begin` statement-sequence `end`		
+
+assingment-statement
+	variable `:=` expression
+
+expression
+	simple-expression [relational-operator simple-expression]
+
+constant-expression
+	simple-constant-expression [relational-operator simple-constant-expression]	
+
+simple-expression
+	term {addition-operator term}
+
+simple-constant-expression
+	constant-term {addition-operatop constant-term}	
+
+addition-operator
+	`+` | `-` | `or`
+
+multiplication-operator
+	`*` | `/` | `div` | `mod` | `and`		
+
+term
+	factor {multiplication-operator factor}
+
+constant-term
+	constant-factor {multiplication-operator constant-factor}
+
+factor
+	variable | number | string | `nil` | function-designator
+
+constant-factor
+	constant-factor | number | string | `nil` | function-designator-from-const
+
+function-designator
+	identifier [ actual-parameter-list ]
+
+function-designator-from-const
+	identifier [ constant-actual-parameter-list ]
+
+variable
+	entire-variable | component-variable
+
+component-variable
+	indexed-variable | field-designator
+
+field-designator
+	identifier `.` variable	
+
+indexed-varialbe
+	identifier `[` expression-list `]`
+
+expression-list
+	expression {`,` expression}
+
+entire-variable
+	identifier						
+
+identifier
+	letter {letter|digit}
+
+letter
+	`A` | `B` | `C` | `D` | `E` | `F` | `G` | `H` | `I` | `J` | `K` | `L` | `M` | `N` | `O` | `P` | `Q` | `R` | `S` | `T` | `U` | `V` | `W` | `X` | `Y` | `Z` | `a` | `b` | `c` | `d` | `e` | `f` | `g` | `h` | `i` | `j` | `k` | `l` | `m` | `n` | `o` | `p` | `q` | `r` | `s` | `t` | `u` | `v` | `w` | `x` | `y` | `z`
+
+digit
+	`0` | `1` | `2` | `3` | `4` | `5` | `6` | `7` | `8` | `9`
+
+relational-operator
+	`=` | `<>` | `<` | `<=` | `>` | `>=` | `in`	

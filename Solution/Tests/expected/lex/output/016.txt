@@ -1,11 +1,1 @@
-(1, 1)    Reserved identifier           true           true                                    
-(1, 6)    Unreserved identifier         is             is                                      
-(1, 9)    Reserved identifier           true           true                                    
-(1, 13)   Delimeter                     .              .                                       
-(2, 1)    Reserved identifier           False          False                                   
-(2, 7)    Keyword                       if             if                                      
-(2, 10)   Reserved identifier           faLse          faLse                                   
-(3, 1)    Keyword                       var            var                                     
-(3, 5)    Unreserved identifier         varn_____ame__1varn_____ame__1                         
-(3, 21)   Unreserved identifier         is             is                                      
-(3, 24)   Unreserved identifier         strange        strange                                 
+Syntax error at (1, 1): Missing 'begin'

@@ -1,1 +1,1 @@
-(1, 1)    Floating point number         7.05847        7.0584684                               
+Syntax error at (1, 1): Missing 'begin'

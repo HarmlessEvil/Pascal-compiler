@@ -1,2 +1,1 @@
-(1, 1)    Keyword                       begin          begin                                   
-(2, 1)    Keyword                       end            end                                     
+Syntax error at (2, 5): Missing . after end

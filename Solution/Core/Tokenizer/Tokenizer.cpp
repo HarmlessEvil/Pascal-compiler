@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <cctype>
 #include <iostream>
+#include <sstream>
 
 #include "Tokenizer.h"
 #include "Errors.h"
@@ -8,58 +9,57 @@
 using namespace std;
 using namespace LexicalAnalyzer;
 
-const map<string, TOKEN_TYPES> Tokenizer::keywords = {
-	{ "begin", KEYWORD },
-	{ "end",   KEYWORD },
-	{ "end.",  END_OF_PROGRAM },
-	{ "and", OPERATOR },
+const map<string, TokenType> Tokenizer::keywords = {
+	{ "begin", BEGIN_KEYWORD },
+	{ "end",   END_KEYWORD },
+	{ "and", MULTIPLICATION_OPERATOR },
 	{ "array", KEYWORD },
 	{ "asm", KEYWORD },
 	{ "break", KEYWORD },
 	{ "case", KEYWORD },
-	{ "const", KEYWORD },
+	{ "const", DECLARATION_TYPE },
 	{ "constructor", KEYWORD },
 	{ "continue", KEYWORD },
 	{ "destructor", KEYWORD },
-	{ "div", OPERATOR },
-	{ "do", KEYWORD },
-	{ "downto", KEYWORD },
-	{ "else", KEYWORD },
+	{ "div", MULTIPLICATION_OPERATOR },
+	{ "do", DO_KEYWORD },
+	{ "downto", FOR_DOWN_KEYWORD },
+	{ "else", ELSE_KEYWORD },
 	{ "end", KEYWORD },
 	{ "file", KEYWORD },
-	{ "for", KEYWORD },
+	{ "for", FOR_HEADING },
 	{ "function", KEYWORD },
 	{ "goto", KEYWORD },
-	{ "if", KEYWORD },
+	{ "if", IF_HEADING },
 	{ "implementation", KEYWORD },
-	{ "in", OPERATOR },
+	{ "in", RELATIONAL_OPERATOR },
 	{ "inline", KEYWORD },
 	{ "interface", KEYWORD },
 	{ "label", KEYWORD },
-	{ "mod", OPERATOR },
-	{ "nil", KEYWORD },
+	{ "mod", MULTIPLICATION_OPERATOR },
+	{ "nil", NIL },
 	{ "not", OPERATOR },
 	{ "object", KEYWORD },
 	{ "of", KEYWORD },
 	{ "on", KEYWORD },
 	{ "operator", KEYWORD },
-	{ "or", OPERATOR },
+	{ "or", ADDITION_OPERATOR },
 	{ "packed", KEYWORD },
 	{ "procedure", KEYWORD }, 
-	{ "program", KEYWORD },
+	{ "program", PROGRAM_HEADING },
 	{ "record", KEYWORD },
-	{ "repeat", KEYWORD },
+	{ "repeat", REPEAT_HEADING },
 	{ "set", KEYWORD },
 	{ "shl", OPERATOR },
 	{ "shr", OPERATOR },
 	{ "string", KEYWORD },
-	{ "then", KEYWORD },
-	{ "to", KEYWORD },
+	{ "then", THEN_KEYWORD },
+	{ "to", FOR_UP_KEYWORD },
 	{ "unit", KEYWORD },
-	{ "until", KEYWORD },
+	{ "until", UNTIL_KEYWORD },
 	{ "uses", KEYWORD },
 	{ "var", KEYWORD },
-	{ "while", KEYWORD },
+	{ "while", WHILE_HEADING },
 	{ "with", KEYWORD },
 	{ "xor", OPERATOR },
 	{ "abs", RESERVED_IDENTIFIER },
@@ -110,6 +110,10 @@ const unordered_set<char> Tokenizer::operators_parts = {
 	'<', '>', '+', '*', '-', '/', ':', '='
 };
 
+const unordered_set<string> relational_operators = {
+	"=", "<>", "<", "<=", ">", ">="
+};
+
 Tokenizer::Tokenizer(ifstream* in) : curr_pos({1, 1}), last_token(NULL)
 {
 	file = in;
@@ -148,7 +152,24 @@ void finish_hex(Token*& token, string& s) {
 	token->setValue(&n);
 }
 
-void finish_identifier(Token*& token, string& s, const std::map<std::string, TOKEN_TYPES>& keywords) {
+void finish_oct(Token*& token, string& s) {
+	token->setText(s);
+
+	s[0] = '0';
+	long long int n = strtoll(s.c_str(), NULL, 0);
+	token->setType(INTEGER);
+	token->setValue(&n);
+}
+
+void finish_bin(Token*& token, string& s) {
+	token->setText(s);
+
+	long long int n = strtoll(s.c_str(), NULL, 2);
+	token->setType(INTEGER);
+	token->setValue(&n);
+}
+
+void finish_identifier(Token*& token, string& s, const std::map<std::string, TokenType>& keywords) {
 	token->setText(s);
 
 	transform(s.begin(), s.end(), s.begin(), ::tolower);
@@ -160,8 +181,6 @@ void finish_identifier(Token*& token, string& s, const std::map<std::string, TOK
 	else {
 		token->setType(UNRESERVED_IDENTIFIER);
 	}
-
-	token->setValue((void*)s.c_str());
 }
 
 void finish_float(Token*& token, string& s) {
@@ -174,26 +193,61 @@ void finish_float(Token*& token, string& s) {
 
 void finish_delimeter(Token*& token, string& s) {
 	token->setText(s);
-	token->setType(DELIMETER);
-	token->setValue((void*)s.c_str());
+
+	if (s == ";") {
+		token->setType(SEMICOLON);
+	}
+	else if (s == ".") {
+		token->setType(DOT);
+	}
+	else if (s == "[") {
+		token->setType(LSBRACE);
+	}
+	else if (s == "]") {
+		token->setType(RSBRACE);
+	}
+	else if (s == ",") {
+		token->setType(COMMA);
+	}
+	else if (s == "(") {
+		token->setType(LBRACE);
+	}
+	else if (s == ")") {
+		token->setType(RBRACE);
+	}
+	else {
+		token->setType(DELIMETER);
+	}
 }
 
 void finish_operator(Token*& token, string& s) {
 	token->setText(s);
-	token->setType(OPERATOR);
-	token->setValue((void*)s.c_str());
+
+	if (s == ":=") {
+		token->setType(ASSIGNMENT_OPERATOR);
+	}
+	else if (relational_operators.find(token->getText()) != relational_operators.end()) {
+		token->setType(RELATIONAL_OPERATOR);
+	}
+	else if (s == "+" || s == "-") {
+		token->setType(ADDITION_OPERATOR);
+	}
+	else if (s == "*" || s == "/") {
+		token->setType(MULTIPLICATION_OPERATOR);
+	}
+	else {
+		token->setType(OPERATOR);
+	}
 }
 
 void finish_string(Token*& token, string& s) {
 	token->setText(s);
 	token->setType(STRING);
-	token->setValue((void*)s.c_str());
 }
 
 void finish_range(Token*& token, string& s) {
 	token->setText(s);
 	token->setType(RANGE);
-	token->setValue((void*)s.c_str());
 }
 
 Token* Tokenizer::next()
@@ -203,7 +257,7 @@ Token* Tokenizer::next()
 	Token* token = NULL;
 
 	if (file->eof()) {
-		return NULL;
+		return new Token(curr_pos, ENDOFFILE, "End of file", 0);
 	}
 	
 	bool idle = true;
@@ -212,8 +266,15 @@ Token* Tokenizer::next()
 	bool reading_float = false;
 	bool reading_exponent_e = false;
 	bool reading_exponent_sign = false;
+
 	bool reading_hex_sign = false;
 	bool reading_hex = false;
+
+	bool reading_oct_sign = false;
+	bool reading_oct = false;
+
+	bool reading_bin_sign = false;
+	bool reading_bin = false;
 
 	bool reading_slash = false;
 	bool skipping_one_line_comment = false;
@@ -313,7 +374,27 @@ Token* Tokenizer::next()
 							reading_hex_sign = false;
 							reading_hex = true;
 						}
-						else if (!reading_hex) {
+						else if (reading_oct_sign) {
+							reading_oct_sign = false;
+							reading_oct = true;
+						}
+						else if (reading_oct) {
+							if (c >= '8') {
+								print_error(ILLEGAL_OCT);
+								return NULL;
+							}
+						}
+						else if (reading_bin_sign) {
+							reading_bin_sign = false;
+							reading_bin = true;
+						}
+						else if (reading_bin) {
+							if (c >= '2') {
+								print_error(ILLEGAL_BIN);
+								return NULL;
+							}
+						}
+						else if (!reading_hex && !reading_oct && !reading_bin) {
 							reading_integer = true;
 						}
 					}
@@ -327,15 +408,7 @@ Token* Tokenizer::next()
 			}
 			else if ('.' == c) {
 
-				if (iequals("end", s)) {
-					s += c;
-
-					token->setText(s);
-					token->setType(END_OF_PROGRAM);
-					last_token = token;
-					return last_token;
-				}
-				else if (reading_identifier) {
+				if (reading_identifier) {
 					file->putback(c);
 
 					finish_identifier(token, s, keywords);
@@ -369,6 +442,16 @@ Token* Tokenizer::next()
 					print_error(ILLEGAL_HEX);
 					return NULL;
 				}
+				else if (reading_oct_sign) {
+					last_token = token;
+					print_error(ILLEGAL_OCT);
+					return NULL;
+				}
+				else if (reading_bin_sign) {
+					last_token = token;
+					print_error(ILLEGAL_BIN);
+					return NULL;
+				}
 				else {
 					if ('.' == c ) {
 						if (s == ".") {
@@ -383,87 +466,6 @@ Token* Tokenizer::next()
 						}
 					}
 				}
-			}
-			else if ('+' == c) {
-				if (reading_exponent_e) {
-					reading_exponent_e = false;
-					reading_exponent_sign = true;
-
-					s += c;
-				}
-			}
-			else if ('$' == c) {
-				reading_hex_sign = true;
-
-				s += c;
-			}
-			else if ('/' == c) {
-				if (reading_slash) {
-					reading_slash = false;
-					skipping_one_line_comment = true;
-					s = "";
-				}
-				else {
-					reading_slash = true;
-					
-					s += c;
-				}
-			}
-			else if ('{' == c) {
-				skipping_multiline_comment = true;
-			}
-			else if ('(' == c) {
-				if (reading_identifier) {
-					file->putback(c);
-
-					finish_identifier(token, s, keywords);
-					last_token = token;
-					return last_token;
-				}
-				else if (reading_exponent_sign || reading_exponent_e) {
-					last_token = token;
-					print_error(ILLEGAL_FLOAT);
-					return NULL;
-				}
-				else if (reading_hex_sign) {
-					last_token = token;
-					print_error(ILLEGAL_HEX);
-					return NULL;
-				}
-				else if (reading_hex) {
-					file->putback(c);
-
-					finish_hex(token, s);
-					last_token = token;
-					return last_token;
-				}
-				else if (reading_integer) {
-					file->putback(c);
-
-					finish_integer(token, s);
-					last_token = token;
-					return last_token;
-				}
-				else if (reading_float) {
-					file->putback(c);
-
-					finish_float(token, s);
-					last_token = token;
-					return last_token;
-				}
-				else if (reading_slash) {
-					file->putback(c);
-
-					finish_operator(token, s);
-					last_token = token;
-					return last_token;
-				}
-
-				reading_lbrace = true;
-			}
-			else if ('*' == c && reading_lbrace) {
-				reading_lbrace = false;
-				skipping_old_style_comments = true;
 			}
 			else if (operators.find(string(c, 1)) != operators.end() || operators_parts.find(c) != operators_parts.end() || operators.find(s) != operators.end()) {
 				if (reading_identifier) {
@@ -483,10 +485,34 @@ Token* Tokenizer::next()
 					print_error(ILLEGAL_HEX);
 					return NULL;
 				}
+				else if (reading_oct_sign) {
+					last_token = token;
+					print_error(ILLEGAL_OCT);
+					return NULL;
+				}
+				else if (reading_bin_sign) {
+					last_token = token;
+					print_error(ILLEGAL_BIN);
+					return NULL;
+				}
 				else if (reading_hex) {
 					file->putback(c);
 
 					finish_hex(token, s);
+					last_token = token;
+					return last_token;
+				}
+				else if (reading_oct) {
+					file->putback(c);
+
+					finish_oct(token, s);
+					last_token = token;
+					return last_token;
+				}
+				else if (reading_bin) {
+					file->putback(c);
+
+					finish_bin(token, s);
 					last_token = token;
 					return last_token;
 				}
@@ -549,6 +575,121 @@ Token* Tokenizer::next()
 					return last_token;
 				}
 			}
+			else if ('+' == c) {
+				if (reading_exponent_e) {
+					reading_exponent_e = false;
+					reading_exponent_sign = true;
+
+					s += c;
+				}
+			}
+			else if ('$' == c) {
+				reading_hex_sign = true;
+
+				s += c;
+			}
+			else if ('&' == c) {
+				reading_oct_sign = true;
+
+				s += c;
+			}
+			else if ('%' == c) {
+				reading_bin_sign = true;
+
+				s += c;
+			}
+			else if ('/' == c) {
+				if (reading_slash) {
+					reading_slash = false;
+					skipping_one_line_comment = true;
+					s = "";
+				}
+				else {
+					reading_slash = true;
+					
+					s += c;
+				}
+			}
+			else if ('{' == c) {
+				skipping_multiline_comment = true;
+			}
+			else if ('(' == c) {
+				if (reading_identifier) {
+					file->putback(c);
+
+					finish_identifier(token, s, keywords);
+					last_token = token;
+					return last_token;
+				}
+				else if (reading_exponent_sign || reading_exponent_e) {
+					last_token = token;
+					print_error(ILLEGAL_FLOAT);
+					return NULL;
+				}
+				else if (reading_hex_sign) {
+					last_token = token;
+					print_error(ILLEGAL_HEX);
+					return NULL;
+				}
+				else if (reading_oct_sign) {
+					last_token = token;
+					print_error(ILLEGAL_OCT);
+					return NULL;
+				}
+				else if (reading_bin_sign) {
+					last_token = token;
+					print_error(ILLEGAL_BIN);
+					return NULL;
+				}
+				else if (reading_hex) {
+					file->putback(c);
+
+					finish_hex(token, s);
+					last_token = token;
+					return last_token;
+				}
+				else if (reading_oct) {
+					file->putback(c);
+
+					finish_oct(token, s);
+					last_token = token;
+					return last_token;
+				}
+				else if (reading_bin) {
+					file->putback(c);
+
+					finish_bin(token, s);
+					last_token = token;
+					return last_token;
+				}
+				else if (reading_integer) {
+					file->putback(c);
+
+					finish_integer(token, s);
+					last_token = token;
+					return last_token;
+				}
+				else if (reading_float) {
+					file->putback(c);
+
+					finish_float(token, s);
+					last_token = token;
+					return last_token;
+				}
+				else if (reading_slash) {
+					file->putback(c);
+
+					finish_operator(token, s);
+					last_token = token;
+					return last_token;
+				}
+
+				reading_lbrace = true;
+			}
+			else if ('*' == c && reading_lbrace) {
+				reading_lbrace = false;
+				skipping_old_style_comments = true;
+			}
 			else if (',' == c || ':' == c || ';' == c || ')' == c || '[' == c || ']' == c) {
 				if (reading_identifier) {
 					file->putback(c);
@@ -567,10 +708,34 @@ Token* Tokenizer::next()
 					print_error(ILLEGAL_HEX);
 					return NULL;
 				}
+				else if (reading_oct_sign) {
+					last_token = token;
+					print_error(ILLEGAL_OCT);
+					return NULL;
+				}
+				else if (reading_bin_sign) {
+					last_token = token;
+					print_error(ILLEGAL_BIN);
+					return NULL;
+				}
 				else if (reading_hex) {
 					file->putback(c);
 
 					finish_hex(token, s);
+					last_token = token;
+					return last_token;
+				}
+				else if (reading_oct) {
+					file->putback(c);
+
+					finish_oct(token, s);
+					last_token = token;
+					return last_token;
+				}
+				else if (reading_bin) {
+					file->putback(c);
+
+					finish_bin(token, s);
 					last_token = token;
 					return last_token;
 				}
@@ -654,8 +819,24 @@ Token* Tokenizer::next()
 							print_error(ILLEGAL_HEX);
 							return NULL;
 						}
+						else if (reading_oct_sign) {
+							last_token = token;
+							print_error(ILLEGAL_OCT);
+							return NULL;
+						}
+						else if (reading_bin_sign) {
+							last_token = token;
+							print_error(ILLEGAL_BIN);
+							return NULL;
+						}
 						else if (reading_hex) {
 							finish_hex(token, s);
+						}
+						else if (reading_oct) {
+							finish_oct(token, s);
+						}
+						else if (reading_bin) {
+							finish_bin(token, s);
 						}
 						else if (reading_float) {
 							finish_float(token, s);
@@ -709,19 +890,38 @@ Token* Tokenizer::next()
 			print_error(ILLEGAL_HEX);
 			return NULL;
 		}
+		else if (reading_oct_sign) {
+			last_token = token;
+			print_error(ILLEGAL_OCT);
+			return NULL;
+		}
+		else if (reading_bin_sign) {
+			last_token = token;
+			print_error(ILLEGAL_BIN);
+			return NULL;
+		}
 		else if (reading_hex) {
 			finish_hex(token, s);
 		}
+		else if (reading_oct) {
+			finish_oct(token, s);
+		}
+		else if (reading_bin) {
+			finish_bin(token, s);
+		}
 		else if (reading_float) {
 			finish_float(token, s);
+		}
+		else if (s == ".") {
+			finish_delimeter(token, s);
 		}
 
 		curr_pos.col++;
 		last_token = token;
 		return last_token;
 	}
-	else {
-		return NULL;
+	else if (file->eof()) {
+		return new Token(curr_pos, ENDOFFILE, "End of file", 0);
 	}
 }
 
@@ -733,5 +933,9 @@ Token* Tokenizer::current()
 void Tokenizer::print_error(int err_num)
 {
 	Token* token = current();
-	cerr << "Lexical error at (" << token->get_position_in_string().row << ", " << token->get_position_in_string().col << "): " << error[err_num] << endl;
+
+	ostringstream s;
+	s << "Lexical error at (" << token->getPositionInString().row << ", " << token->getPositionInString().col << "): " << error[err_num] << endl;
+
+	throw exception(s.str().c_str());
 }

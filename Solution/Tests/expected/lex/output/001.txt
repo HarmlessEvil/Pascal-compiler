@@ -1,2 +1,2 @@
-(1, 1)    Keyword                       begin          begin                                   
-(2, 1)    End of program                end.           end.                                    
+the program
+À--block

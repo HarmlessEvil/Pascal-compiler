@@ -1,0 +1,14 @@
+program A;
+begin
+	x := 7;
+	while a > 3 do
+	begin
+		x := 1000;
+		y := 1;
+		while k = 4 do
+		begin
+			x := 1000;
+			y := 1;
+		end
+	end
+end.

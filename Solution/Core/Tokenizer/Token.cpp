@@ -7,11 +7,11 @@
 using namespace LexicalAnalyzer;
 using namespace std;
 
-Token::Token(string_coord pos, TOKEN_TYPES type, std::string text, void* value) : position_in_string(pos), type(type), text(text), value(value)
+Token::Token(StringCoord pos, TokenType type, std::string text, void* value) : position_in_string(pos), type(type), text(text), value(value)
 {
 }
 
-Token::Token(string_coord pos) : position_in_string(pos), type(INVALID)
+Token::Token(StringCoord pos) : position_in_string(pos), type(INVALID)
 {
 }
 
@@ -44,7 +44,7 @@ void Token::setValue(void* value)
 	}
 }
 
-void Token::setType(TOKEN_TYPES type)
+void Token::setType(TokenType type)
 {
 	this->type = type;
 }
@@ -63,6 +63,20 @@ void Token::print()
 	cout << left << setw(classWidth) << setfill(separator);
 	switch (type) {
 	case KEYWORD:
+	case BEGIN_KEYWORD:
+	case END_KEYWORD:
+	case WHILE_HEADING:
+	case DO_KEYWORD:
+	case REPEAT_HEADING:
+	case UNTIL_KEYWORD:
+	case FOR_HEADING:
+	case FOR_UP_KEYWORD:
+	case FOR_DOWN_KEYWORD:
+	case IF_HEADING:
+	case THEN_KEYWORD:
+	case ELSE_KEYWORD:
+	case DECLARATION_TYPE:
+	case NIL:
 		cout << "Keyword";
 		break;
 	case RESERVED_IDENTIFIER:
@@ -82,16 +96,33 @@ void Token::print()
 		cout << length_string.str();
 		break;
 	case OPERATOR:
+	case ASSIGNMENT_OPERATOR:
+	case RELATIONAL_OPERATOR:
+	case ADDITION_OPERATOR:
+	case MULTIPLICATION_OPERATOR:
 		cout << "Operator";
 		break;
+	case SEMICOLON:
+	case DOT:
+	case LSBRACE:
+	case RSBRACE:
+	case COMMA:
+	case LBRACE:
+	case RBRACE:
 	case DELIMETER:
 		cout << "Delimeter";
 		break;
 	case RANGE:
 		cout << "Range";
 		break;
-	case END_OF_PROGRAM:
-		cout << "End of program";
+	case PROGRAM_HEADING:
+		cout << "Program heading";
+		break;
+	case ENDOFFILE:
+		cout << "EOF";
+		break;
+	case PROGRAM_BLOCK:
+		cout << "Program block";
 		break;
 	case INVALID:
 	default:
@@ -116,12 +147,95 @@ void Token::print()
 	cout << endl;
 }
 
-Token::string_coord Token::get_position_in_string()
+Token::StringCoord Token::getPositionInString()
 {
 	return position_in_string;
 }
 
-TOKEN_TYPES Token::get_type()
+TokenType Token::getType()
 {
 	return type;
+}
+
+TokenType LexicalAnalyzer::Token::getSubType()
+{
+	switch (type) {
+	case ADDITION_OPERATOR:
+		if (text == "+") {
+			return PLUS_OPERATOR;
+		}
+		else if (text == "-") {
+			return MINUS_OPERATOR;
+		}
+		else if (text == "or") {
+			return OR_OPERATOR;
+		}
+		break;
+
+	case MULTIPLICATION_OPERATOR:
+		if (text == "*") {
+			return MULTIPLICATION_OPERATOR;
+		}
+		else if (text == "/") {
+			return FDIV_OPERATOR;
+		}
+		else if (text == "div") {
+			return IDIV_OPERATOR;
+		}
+		else if (text == "mod") {
+			return MOD_OPERATOR;
+		}
+		else if (text == "and") {
+			return AND_OPERATOR;
+		}
+		break;
+
+	case RELATIONAL_OPERATOR:
+		if (text == "=") {
+			return EQUALS_RELATION_OPERATOR;
+		}
+		else if (text == "<>") {
+			return NOT_EQUALS_RELATIONAL_OPERATOR;
+		}
+		else if (text == "<") {
+			return LESS_RELATIONAL_OPERATOR;
+		}
+		else if (text == "<=") {
+			return LESS_OR_EQUALS_RELATIONAL_OPERATOR;
+		}
+		else if (text == ">") {
+			return GREATER_RELATIONAL_OPERATOR;
+		}
+		else if (text == ">=") {
+			return GREATER_OR_EQUALS_RELATIONAL_OPERATOR;
+		}
+		else if (text == "in") {
+			return IN_RELATIONAL_OPERATOR;
+		}
+
+	case DECLARATION_TYPE:
+		if (text == "const") {
+			return CONST_DEFINITION_KEYWORD;
+		}
+
+	default:
+		return TokenType();
+	}
+
+	return TokenType();
+}
+
+std::string LexicalAnalyzer::Token::getText()
+{
+	return this->text;
+}
+
+bool LexicalAnalyzer::Token::operator==(const char* c)
+{
+	return this->text.compare(c) == 0;
+}
+
+bool LexicalAnalyzer::Token::operator!=(const char* c)
+{
+	return this->text.compare(c) != 0;
 }
