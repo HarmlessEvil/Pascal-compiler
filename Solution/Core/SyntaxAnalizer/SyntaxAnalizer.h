@@ -50,7 +50,12 @@ private:
 	Node* parseFunctionDesignator();
 	Node* parseConstantFunctionDesignator();
 	Node* parseConstantDefinitionPart();
+	Node* parseVarDefinitionPart();
 	Node* parseConstantDefinition();
+	Node* parseVarDefinition();
+	Node* parseType();
+
+	static const std::unordered_set<std::string> builtInTypes;
 
 	void throwError(LexicalAnalyzer::Token::StringCoord, char*);
 };

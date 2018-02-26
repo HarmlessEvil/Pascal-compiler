@@ -1,1 +1,11 @@
-Syntax error at (1, 1): Missing 'begin'
+the program
+À--var
+|  À--integer
+|  |  À--a
+À--block
+|  À--:=
+|  |  À--a
+|  |  À--&067
+|  À--writeln
+|  |  À--(
+|  |  |  À--a

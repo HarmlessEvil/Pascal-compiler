@@ -8,10 +8,19 @@ block
 	declaration-part statement-part
 
 declaration-part
-	constant-definition-part
+	[constant-definition-part] | [var-definition-part]
+
+var-definition-part
+	`var` var-definition `;`
 
 constant-definition-part
 	`const` constant-definition `;`
+
+var-definition
+	identifier-list `:` type
+
+identifier-list
+	identifier {`,` identifier}
 
 constant-definition
 	identifier `=` constant-expression

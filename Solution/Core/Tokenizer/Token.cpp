@@ -217,6 +217,9 @@ TokenType LexicalAnalyzer::Token::getSubType()
 		if (text == "const") {
 			return CONST_DEFINITION_KEYWORD;
 		}
+		else if (text == "var") {
+			return VAR_DEFINITION_KEYWORD;
+		}
 
 	default:
 		return TokenType();

@@ -1,6 +1,6 @@
-const
-	x = 3;
-	y = 'a';
+var
+	x, y : Integer;
+	z, gavgav: ReAl;
 
 begin
 

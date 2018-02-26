@@ -58,7 +58,6 @@ const map<string, TokenType> Tokenizer::keywords = {
 	{ "unit", KEYWORD },
 	{ "until", UNTIL_KEYWORD },
 	{ "uses", KEYWORD },
-	{ "var", KEYWORD },
 	{ "while", WHILE_HEADING },
 	{ "with", KEYWORD },
 	{ "xor", OPERATOR },
@@ -98,6 +97,7 @@ const map<string, TokenType> Tokenizer::keywords = {
 	{ "text", RESERVED_IDENTIFIER },
 	{ "true", RESERVED_IDENTIFIER },
 	{ "trunc", RESERVED_IDENTIFIER },
+	{ "var",  DECLARATION_TYPE },
 	{ "write", RESERVED_IDENTIFIER },
 	{ "writeln", RESERVED_IDENTIFIER },
 };
@@ -214,6 +214,9 @@ void finish_delimeter(Token*& token, string& s) {
 	}
 	else if (s == ")") {
 		token->setType(RBRACE);
+	}
+	else if (s == ":") {
+		token->setType(COLON);
 	}
 	else {
 		token->setType(DELIMETER);

@@ -1,0 +1,6 @@
+the program
+À--var
+|  À--Integer
+|  |  À--x
+|  |  À--y
+À--block

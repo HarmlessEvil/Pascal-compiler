@@ -1,12 +1,9 @@
-program
-À--A
-À--the program
-|  À--block
-|  |  À--:=
-|  |  |  À--a
-|  |  |  À--cos
-|  |  |  |  À--(
-|  |  |  |  |  À--y
-|  |  |  |  |  À--$FFF
-|  |  |  |  |  À--cos
-|  |  |  |  |  |  À--(
+the program
+À--var
+|  À--Integer
+|  |  À--x
+|  |  À--y
+|  À--ReAl
+|  |  À--z
+|  |  À--gavgav
+À--block

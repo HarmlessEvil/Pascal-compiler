@@ -1,0 +1,7 @@
+var
+	x, y : Integer;
+	z, gavgav: ReAl;
+
+begin
+
+end.

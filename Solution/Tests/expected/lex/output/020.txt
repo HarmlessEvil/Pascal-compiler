@@ -1,1 +1,1 @@
-Syntax error at (1, 1): Missing 'begin'
+Syntax error at (6, 1): Missing 'end'

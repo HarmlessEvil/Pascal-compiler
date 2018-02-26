@@ -1,5 +1,6 @@
 #include "SyntaxAnalizer.h"
 
+#include <algorithm>
 #include <sstream>
  
 using namespace LexicalAnalyzer;
@@ -193,6 +194,10 @@ vector<Node*>* SyntaxAnalizer::parseDeclarationPart(bool has_heading)
 		{
 		case CONST_DEFINITION_KEYWORD:
 			declarations->push_back(parseConstantDefinitionPart());
+			break;
+
+		case VAR_DEFINITION_KEYWORD:
+			declarations->push_back(parseVarDefinitionPart());
 			break;
 		}
 
@@ -718,6 +723,24 @@ Node* SyntaxAnalizer::parseConstantDefinitionPart()
 	return new ConstantDefinitionPartNode(t, constants);
 }
 
+Node * SyntaxAnalizer::parseVarDefinitionPart()
+{
+	Token* t = tokenizer->current();
+	Node* var;
+	vector<Node*>* vars = new vector<Node*>();
+
+	while (var = parseVarDefinition()) {
+		vars->push_back(var);
+
+		Token* semicolon = tokenizer->current();
+		if (semicolon->getType() != SEMICOLON) {
+			throwError(semicolon->getPositionInString(), "Missing ';' in variables definition");
+		}
+	}
+	
+	return new Node(t, vars);
+}
+
 Node* SyntaxAnalizer::parseConstantDefinition()
 {
 	Token* t = tokenizer->next();
@@ -732,7 +755,54 @@ Node* SyntaxAnalizer::parseConstantDefinition()
 	}
 
 	tokenizer->next();
-	return new ConstantNode(t_equals, identifier, parseConstantExpression());
+	return new Node(t_equals, identifier, parseConstantExpression());
+}
+
+Node* SyntaxAnalizer::parseVarDefinition()
+{
+	Token* t = tokenizer->next();
+	Node* identifier = parseEntireVariable();
+	vector<Node*>* identifiers = new vector<Node*>;
+	if (!identifier) {
+		return NULL;
+	}
+	identifiers->push_back(identifier);
+
+	t = tokenizer->next();
+	while (t->getType() == COMMA) {
+		t = tokenizer->next();
+
+		identifiers->push_back(parseEntireVariable());
+		t = tokenizer->next();
+	}
+
+	if (t->getType() != COLON) {
+		throwError(t->getPositionInString(), "Missing ':' in var definition");
+	}
+
+	Node* type;
+	t = tokenizer->next();
+	if (t->getType() == RESERVED_IDENTIFIER) {
+		type = parseType();
+	}
+	
+	tokenizer->next();
+	return new Node(t, identifiers);
+}
+
+const unordered_set<string> SyntaxAnalizer::builtInTypes = {"integer", "real", "double", "long"};
+
+Node* SyntaxAnalizer::parseType()
+{
+	Token* t = tokenizer->current();
+	string type = t->getText();
+
+	transform(type.begin(), type.end(), type.begin(), ::tolower);
+	if (builtInTypes.find(type) == builtInTypes.end()) {
+		throwError(t->getPositionInString(), "Type cannot be resolved!");
+	}
+
+	return new Node(t);
 }
 
 void SyntaxAnalizer::throwError(Token::StringCoord pos, char* text)

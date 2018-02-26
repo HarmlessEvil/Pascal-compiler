@@ -1,1 +1,1 @@
-Syntax error at (1, 1): Missing 'begin'
+Syntax error at (2, 8): Missing ';' in variables definition
