@@ -1,6 +1,5 @@
 var
-	x, y : Integer;
-	z, gavgav: ReAl;
+	x: Array [ 1..15, 3..16 ] of Array [0..10] of Integer;
 
 begin
 

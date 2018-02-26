@@ -76,6 +76,8 @@ void Token::print()
 	case THEN_KEYWORD:
 	case ELSE_KEYWORD:
 	case DECLARATION_TYPE:
+	case ARRAY_HEADING:
+	case OF_KEYWORD:
 	case NIL:
 		cout << "Keyword";
 		break;

@@ -1,9 +1,7 @@
 the program
 À--var
-|  À--Integer
-|  |  À--x
-|  |  À--y
-|  À--ReAl
-|  |  À--z
-|  |  À--gavgav
+|  À--:
+|  |  À--1..160
+|  |  À--:
+|  |  |  À--x
 À--block

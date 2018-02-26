@@ -1,6 +1,5 @@
 var
-	x, y : Integer;
-	z, gavgav: ReAl;
+	x: 1..160;
 
 begin
 

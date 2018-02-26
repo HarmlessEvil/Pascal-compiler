@@ -19,6 +19,18 @@ constant-definition-part
 var-definition
 	identifier-list `:` type
 
+type
+	range | built-in-type | type-identifier | array-type
+
+array-type
+	`array` `[` range {`,` range} `]` `of` type	
+
+type-identifier
+	identifier
+
+range
+	integer `..` integer
+
 identifier-list
 	identifier {`,` identifier}
 

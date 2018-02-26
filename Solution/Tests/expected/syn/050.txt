@@ -1,0 +1,6 @@
+var
+	x: array [ 1..15, 3..16 ] of integer;
+
+begin
+
+end.

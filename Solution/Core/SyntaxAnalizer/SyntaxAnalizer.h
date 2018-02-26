@@ -54,6 +54,7 @@ private:
 	Node* parseConstantDefinition();
 	Node* parseVarDefinition();
 	Node* parseType();
+	Node* parseArrayDefinition();
 
 	static const std::unordered_set<std::string> builtInTypes;
 

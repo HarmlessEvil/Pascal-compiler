@@ -780,14 +780,15 @@ Node* SyntaxAnalizer::parseVarDefinition()
 		throwError(t->getPositionInString(), "Missing ':' in var definition");
 	}
 
-	Node* type;
+	Node* type = new Node();
+	Token* colon = t;
 	t = tokenizer->next();
-	if (t->getType() == RESERVED_IDENTIFIER) {
+	if (t->getType() == RESERVED_IDENTIFIER || t->getType() == RANGE || t->getType() == ARRAY_HEADING) {
 		type = parseType();
 	}
 	
 	tokenizer->next();
-	return new Node(t, identifiers);
+	return new Node(colon, type, new Node(colon, identifiers));
 }
 
 const unordered_set<string> SyntaxAnalizer::builtInTypes = {"integer", "real", "double", "long"};
@@ -795,14 +796,64 @@ const unordered_set<string> SyntaxAnalizer::builtInTypes = {"integer", "real", "
 Node* SyntaxAnalizer::parseType()
 {
 	Token* t = tokenizer->current();
-	string type = t->getText();
+	TokenType t_type = t->getType();
 
-	transform(type.begin(), type.end(), type.begin(), ::tolower);
-	if (builtInTypes.find(type) == builtInTypes.end()) {
-		throwError(t->getPositionInString(), "Type cannot be resolved!");
+	switch (t_type) {
+	case RANGE:
+		return new Node(t);
+
+	case ARRAY_HEADING:
+		return parseArrayDefinition();
+
+	default:
+		string type = t->getText();
+
+		transform(type.begin(), type.end(), type.begin(), ::tolower);
+		if (builtInTypes.find(type) == builtInTypes.end()) {
+			throwError(t->getPositionInString(), "Type cannot be resolved!");
+		}
+
+		return new Node(t);
+	}
+}
+
+Node* SyntaxAnalizer::parseArrayDefinition()
+{
+	Token* arr = tokenizer->current();
+	Token* t = tokenizer->next();
+
+	Token* brace = t;
+	if (t->getType() != LSBRACE) {
+		throwError(t->getPositionInString(), "Mssing '[' in array definition");
 	}
 
-	return new Node(t);
+	vector<Node*>* dimensions = new vector<Node*>;
+
+	t = tokenizer->next();
+	while (t->getType() == RANGE) {
+		dimensions->push_back(new Node(t));
+
+		t = tokenizer->next();
+		if (t->getType() == RSBRACE) {
+			t = tokenizer->next();
+			break;
+		}
+		else if (t->getType() != COMMA) {
+			throwError(t->getPositionInString(), "Missing ']' in array definition");
+		}
+
+		t = tokenizer->next();
+	}
+
+	Token* of = t;
+	if (t->getType() != OF_KEYWORD) {
+		throwError(t->getPositionInString(), "Missing 'of' keyword in array definition");
+	}
+
+	t = tokenizer->next();
+	Node* type = parseType();
+
+	return new Node(arr, new Node(brace, dimensions), new Node(of, type));
 }
 
 void SyntaxAnalizer::throwError(Token::StringCoord pos, char* text)

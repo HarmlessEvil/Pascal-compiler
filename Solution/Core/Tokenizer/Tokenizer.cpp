@@ -13,7 +13,7 @@ const map<string, TokenType> Tokenizer::keywords = {
 	{ "begin", BEGIN_KEYWORD },
 	{ "end",   END_KEYWORD },
 	{ "and", MULTIPLICATION_OPERATOR },
-	{ "array", KEYWORD },
+	{ "array", ARRAY_HEADING },
 	{ "asm", KEYWORD },
 	{ "break", KEYWORD },
 	{ "case", KEYWORD },
@@ -40,7 +40,7 @@ const map<string, TokenType> Tokenizer::keywords = {
 	{ "nil", NIL },
 	{ "not", OPERATOR },
 	{ "object", KEYWORD },
-	{ "of", KEYWORD },
+	{ "of", OF_KEYWORD },
 	{ "on", KEYWORD },
 	{ "operator", KEYWORD },
 	{ "or", ADDITION_OPERATOR },
@@ -291,6 +291,8 @@ Token* Tokenizer::next()
 	bool reading_operator = false;
 	bool reading_string = false;
 
+	bool reading_range = false;
+
 	while (file->get(c)) {
 		if (('\n' != c) && ('\t' != c) && (' ' != c) && !skipping_one_line_comment && !skipping_multiline_comment && !skipping_old_style_comments) {
 			if (idle) {
@@ -426,13 +428,10 @@ Token* Tokenizer::next()
 				}
 				else if (reading_float) {
 					if (s.back() == '.') {
-						file->putback('.');
-						file->putback('.');
-						s.pop_back();
+						reading_range = true;
+						reading_float = false;
 
-						finish_integer(token, s);
-						last_token = token;
-						return last_token;
+						s += c;
 					}
 					else {
 						last_token = token;
@@ -521,6 +520,12 @@ Token* Tokenizer::next()
 				}
 				else if (reading_integer) {
 					file->putback(c);
+
+					if (reading_range) {
+						finish_range(token, s);
+						last_token = token;
+						return last_token;
+					}
 
 					finish_integer(token, s);
 					last_token = token;
@@ -668,6 +673,12 @@ Token* Tokenizer::next()
 				else if (reading_integer) {
 					file->putback(c);
 
+					if (reading_range) {
+						finish_range(token, s);
+						last_token = token;
+						return last_token;
+					}
+
 					finish_integer(token, s);
 					last_token = token;
 					return last_token;
@@ -745,6 +756,12 @@ Token* Tokenizer::next()
 				else if (reading_integer) {
 					file->putback(c);
 
+					if (reading_range) {
+						finish_range(token, s);
+						last_token = token;
+						return last_token;
+					}
+
 					finish_integer(token, s);
 					last_token = token;
 					return last_token;
@@ -810,6 +827,12 @@ Token* Tokenizer::next()
 							finish_identifier(token, s, keywords);
 						}
 						else if (reading_integer) {
+							if (reading_range) {
+								finish_range(token, s);
+								last_token = token;
+								return last_token;
+							}
+
 							finish_integer(token, s);
 						}
 						else if (reading_exponent_sign || reading_exponent_e) {
@@ -881,6 +904,12 @@ Token* Tokenizer::next()
 			finish_identifier(token, s, keywords);
 		}
 		else if (reading_integer) {
+			if (reading_range) {
+				finish_range(token, s);
+				last_token = token;
+				return last_token;
+			}
+
 			finish_integer(token, s);
 		}
 		else if (reading_exponent_sign || reading_exponent_e) {

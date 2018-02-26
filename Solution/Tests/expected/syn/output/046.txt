@@ -1,5 +1,7 @@
 the program
 À--var
-|  À--Integer
-|  |  À--x
+|  À--:
+|  |  À--Integer
+|  |  À--:
+|  |  |  À--x
 À--block
