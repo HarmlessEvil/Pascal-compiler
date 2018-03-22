@@ -4,7 +4,7 @@ setlocal enabledelayedexpansion
 SET /A all_count=0
 SET /A ok_count=0
 
-FOR /D %%I IN ("expected/*") DO (
+FOR /D %%I IN ("expected/sem*") DO (
     FOR %%J IN ("expected/"%%I"/*") DO (
         SET /A all_count+=1
         CALL "../Debug/Pascal.exe" expected/%%I/%%J > output.txt 2>&1

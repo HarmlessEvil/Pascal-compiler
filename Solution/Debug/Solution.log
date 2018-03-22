@@ -1,4 +1,5 @@
 ﻿C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\Microsoft.CppBuild.targets(392,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (Solution.vcxproj).  This can lead to incorrect clean and rebuild behavior.
-  SyntaxAnalizer.cpp
+  Tokenizer.cpp
+d:\projects\pascal-compiler\solution\core\tokenizer\tokenizer.cpp(959): warning C4715: LexicalAnalyzer::Tokenizer::next: значение возвращается не при всех путях выполнения
   Solution.vcxproj -> D:\Projects\Pascal-compiler\Solution\Debug\Pascal.exe
   Solution.vcxproj -> D:\Projects\Pascal-compiler\Solution\Debug\Pascal.pdb (Partial PDB)

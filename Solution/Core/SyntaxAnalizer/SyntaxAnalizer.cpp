@@ -2,7 +2,10 @@
 
 #include <algorithm>
 #include <sstream>
- 
+#include <vector>
+
+#include "../SemanticAnalyzer/SemanticAnalyzer.h"
+
 using namespace LexicalAnalyzer;
 using namespace std;
 
@@ -121,7 +124,7 @@ Node* SyntaxAnalizer::parseFactor()
 			return var;
 		}
 	}
-	if (type == INTEGER || type == FLOAT || type == STRING || type == NIL) {
+	if (type == INTEGER_LITERAL || type == FLOAT_LITERAL || type == STRING_LITERAL || type == NIL) {
 		tokenizer->next();
 		return new FactorNode(t);
 	}
@@ -156,7 +159,7 @@ Node* SyntaxAnalizer::parseConstantFactor()
 			return var;
 		}
 	}
-	if (type == INTEGER || type == FLOAT || type == STRING || type == NIL) {
+	if (type == INTEGER_LITERAL || type == FLOAT_LITERAL || type == STRING_LITERAL || type == NIL) {
 		tokenizer->next();
 		return new ConstantFactorNode(t);
 	}
@@ -276,26 +279,31 @@ Node* SyntaxAnalizer::parseAssignmentStatement()
 	if (!variable) {
 		return NULL;
 	}
-	
+
 	Token* t = tokenizer->current();
 	if (t->getType() != ASSIGNMENT_OPERATOR) {
+		//Avoid rvalue
 		if (t->getType() == LBRACE) {
 			return variable->attach(parseProcedureStatement());
 		}
-		else {
-			throwError(t->getPositionInString(), "Illegal exprression");
-		}
+		
+		throwError(t->getPositionInString(), "Illegal exprression");
 	}
-	else {
-		tokenizer->next();
-		assignment = new AssignmentNode(t, variable, parseExpression());
-	}
+	
+	tokenizer->next();
+	assignment = new AssignmentNode(t, variable, parseExpression());
+
+	Token* token = variable->get_token();
+	string var_name = token->getText();
+	SymVar* symbol = static_cast<SymVar*>(variable->setSymbol(SemanticAnalyzer::getSymbol(var_name)));
+
+	symbol->isCompatibleTo(assignment->children->at(1)->get_token());
 
 	return assignment;
 }
 
 Node* SyntaxAnalizer::parseVariable()
-{
+{ 
 	Node* variable = parseEntireVariable();
 	if (!variable) {
 		return NULL;
@@ -730,6 +738,20 @@ Node * SyntaxAnalizer::parseVarDefinitionPart()
 	vector<Node*>* vars = new vector<Node*>();
 
 	while (var = parseVarDefinition()) {
+		Token* type = var->children->at(0)->get_token();
+		vector<Node*>* var_names = var->children->at(1)->children;
+		Symbol* symVar;
+
+		for (auto it = var_names->begin(); it != var_names->end(); it++) {
+			Token* token = (*it)->get_token();
+
+			if (!(symVar = SemanticAnalyzer::addVariable(token->getText(), type))) {
+				throwError(token->getPositionInString(), "Duplicate declaration of variable", "Sematic error");
+			}
+
+			var->setSymbol(symVar);
+		}
+
 		vars->push_back(var);
 
 		Token* semicolon = tokenizer->current();
@@ -791,7 +813,7 @@ Node* SyntaxAnalizer::parseVarDefinition()
 	return new Node(colon, type, new Node(colon, identifiers));
 }
 
-const unordered_set<string> SyntaxAnalizer::builtInTypes = {"integer", "real", "double", "long"};
+const unordered_set<string> SyntaxAnalizer::builtInTypes = {"integer", "real", "double", "long", "float"};
 
 Node* SyntaxAnalizer::parseType()
 {
@@ -856,10 +878,10 @@ Node* SyntaxAnalizer::parseArrayDefinition()
 	return new Node(arr, new Node(brace, dimensions), new Node(of, type));
 }
 
-void SyntaxAnalizer::throwError(Token::StringCoord pos, char* text)
+void SyntaxAnalizer::throwError(Token::StringCoord pos, char* text, string type)
 {
 	ostringstream s;
-	s << "Syntax error at (" << pos.row << ", " << pos.col << "): " << text;
+	s << type << " at (" << pos.row << ", " << pos.col << "): " << text;
 
 	throw exception(s.str().c_str());
 }

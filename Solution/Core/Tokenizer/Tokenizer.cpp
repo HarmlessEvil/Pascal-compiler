@@ -28,6 +28,7 @@ const map<string, TokenType> Tokenizer::keywords = {
 	{ "end", KEYWORD },
 	{ "file", KEYWORD },
 	{ "for", FOR_HEADING },
+	{ "float", RESERVED_IDENTIFIER },
 	{ "function", KEYWORD },
 	{ "goto", KEYWORD },
 	{ "if", IF_HEADING },
@@ -138,7 +139,7 @@ void finish_integer(Token*& token, string& s) {
 	token->setText(s);
 
 	long long int n = strtoll(s.c_str(), NULL, 0);
-	token->setType(INTEGER);
+	token->setType(INTEGER_LITERAL);
 	token->setValue(&n);
 }
 
@@ -148,7 +149,7 @@ void finish_hex(Token*& token, string& s) {
 	s[0] = 'x';
 	s = '0' + s;
 	long long int n = strtoll(s.c_str(), NULL, 0);
-	token->setType(INTEGER);
+	token->setType(INTEGER_LITERAL);
 	token->setValue(&n);
 }
 
@@ -157,7 +158,7 @@ void finish_oct(Token*& token, string& s) {
 
 	s[0] = '0';
 	long long int n = strtoll(s.c_str(), NULL, 0);
-	token->setType(INTEGER);
+	token->setType(INTEGER_LITERAL);
 	token->setValue(&n);
 }
 
@@ -165,7 +166,7 @@ void finish_bin(Token*& token, string& s) {
 	token->setText(s);
 
 	long long int n = strtoll(s.c_str(), NULL, 2);
-	token->setType(INTEGER);
+	token->setType(INTEGER_LITERAL);
 	token->setValue(&n);
 }
 
@@ -187,7 +188,7 @@ void finish_float(Token*& token, string& s) {
 	token->setText(s);
 
 	long double n = stold(s.c_str(), NULL);
-	token->setType(FLOAT);
+	token->setType(FLOAT_LITERAL);
 	token->setValue(&n);
 }
 
@@ -245,7 +246,7 @@ void finish_operator(Token*& token, string& s) {
 
 void finish_string(Token*& token, string& s) {
 	token->setText(s);
-	token->setType(STRING);
+	token->setType(STRING_LITERAL);
 }
 
 void finish_range(Token*& token, string& s) {

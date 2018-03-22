@@ -115,6 +115,20 @@ AssignmentNode::AssignmentNode(Token* token, Node* lhs, Node* rhs) : Node(token,
 
 EntireVariableNode::EntireVariableNode(Token* token) : Node(token) {}
 
+Symbol* Node::setSymbol(Symbol* symbol)
+{
+	if (!symbol) {
+		SemanticAnalyzer::throwError(this->token->getPositionInString(), ("Variable " + this->token->getText() + " is undefined").c_str());
+	}
+
+	return this->symbol = symbol;
+}
+
+Symbol* Node::getSymbol()
+{
+	return this->symbol;
+}
+
 EntireConstantVariableNode::EntireConstantVariableNode(Token* token) : Node(token) 
 {
 	this->constant = true;

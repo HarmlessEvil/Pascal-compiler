@@ -58,5 +58,5 @@ private:
 
 	static const std::unordered_set<std::string> builtInTypes;
 
-	void throwError(LexicalAnalyzer::Token::StringCoord, char*);
+	void throwError(LexicalAnalyzer::Token::StringCoord, char*, std::string = "Syntax error");
 };

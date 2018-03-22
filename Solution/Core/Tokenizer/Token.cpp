@@ -30,11 +30,11 @@ void Token::setText(std::string text)
 void Token::setValue(void* value)
 {
 	switch (type) {
-	case INTEGER:
+	case INTEGER_LITERAL:
 		this->value = new long long int;
 		memcpy(this->value, value, sizeof(long long int));
 		break;
-	case FLOAT:
+	case FLOAT_LITERAL:
 		this->value = new long double;
 		memcpy(this->value, value, sizeof(long double));
 		break;
@@ -87,13 +87,13 @@ void Token::print()
 	case UNRESERVED_IDENTIFIER:
 		cout << "Unreserved identifier";
 		break;
-	case INTEGER:
+	case INTEGER_LITERAL:
 		cout << "Integer";
 		break;
-	case FLOAT:
+	case FLOAT_LITERAL:
 		cout << "Floating point number";
 		break;
-	case STRING:
+	case STRING_LITERAL:
 		length_string << "String (" << text.length() - 2 << ')';
 		cout << length_string.str();
 		break;
@@ -134,10 +134,10 @@ void Token::print()
 
 	cout << left << setw(valueWidth) << setfill(separator);
 	switch (type) {
-	case INTEGER:
+	case INTEGER_LITERAL:
 		cout << *(static_cast<long long int*>(value));
 		break;
-	case FLOAT:
+	case FLOAT_LITERAL:
 		cout << *(static_cast<long double*>(value));
 		break;
 	default:

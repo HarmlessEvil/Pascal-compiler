@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "../Tokenizer/Token.h"
+#include "../SemanticAnalyzer/SemanticAnalyzer.h"
 
 enum NodeType { INTEGER_NODE, REAL_NODE };
 
@@ -19,16 +20,25 @@ public:
 	std::vector<Node*>* children;
 	Node* attach(Node*);
 
+	Symbol* setSymbol(Symbol*);
+	Symbol* getSymbol();
+
 	LexicalAnalyzer::Token* get_token();
 
 	bool isConstant();
 	void print();
+	SymType* getType() {
+		return nullptr;
+	}
 
 protected:
 	LexicalAnalyzer::Token* token;
 
 	bool constant = false;
 	void print_tree(Node*, int);
+
+private:
+	Symbol* symbol;
 };
 
 class ProgramHeadingNode : public Node {
@@ -89,6 +99,7 @@ public:
 	ConstantFactorNode(LexicalAnalyzer::Token*);
 private:
 	LexicalAnalyzer::TokenType type;
+	SymType * getType() { return type == INTEGER_LITERAL ? integer1 : float1;  }
 };
 
 class StatementPartNode : public Node {
