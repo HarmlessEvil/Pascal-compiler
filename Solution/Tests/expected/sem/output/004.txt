@@ -1,1 +1,0 @@
-Semantic error at (6, 2): Variable x is undefined

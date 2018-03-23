@@ -1,1 +1,0 @@
-Semantic error at (4, 5): Variable x is already defined

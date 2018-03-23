@@ -17,6 +17,9 @@ protected:
 class SymType : public Symbol {
 public:
 	SymType(std::string);
+
+	virtual bool isCompatibleTo(SymType*);
+	virtual SymType* commonType(SymType*);
 };
 class SymTypeScalar : public SymType {
 public:
@@ -27,29 +30,32 @@ class SymTypeFloat : public SymTypeScalar {
 public:
 	SymTypeFloat(std::string);
 
-	bool isCompatibleTo(LexicalAnalyzer::TokenType);
+	bool isCompatibleTo(SymType*);
+	SymType* commonType(SymType*);
 };
 
 class SymTypeInteger : public SymTypeScalar {
 public:
 	SymTypeInteger(std::string);
 
-	bool isCompatibleTo(LexicalAnalyzer::TokenType);
+	bool isCompatibleTo(SymType*);
+	SymType* commonType(SymType*);
 };
 
 class SymVar : public Symbol {
 public:
-	SymVar(std::string, Symbol*);
+	SymVar(std::string, SymType*);
 
-	void isCompatibleTo(LexicalAnalyzer::Token*);
+	SymType* getType();
 
 private:
-	Symbol* type;
+	SymType* type;
 };
 
 class SemanticAnalyzer {
 public:
 	static SymVar* addVariable(std::string, LexicalAnalyzer::Token*);
+	static SymVar* getVariable(std::string);
 
 	static Symbol* getSymbol(std::string);
 
@@ -60,7 +66,11 @@ public:
 	static SymTypeInteger* getIntegerType();
 	static SymTypeFloat* getFloatType();
 
+	//static void setTokenizer(LexicalAnalyzer::Tokenizer*);
+	//static LexicalAnalyzer::Tokenizer* getTokenizer();
+
 	static void throwError(LexicalAnalyzer::Token::StringCoord, const char*);
+	static void throwError(const char*);
 
 private:
 	static bool symbolExistsInLocalScope(std::string);
@@ -68,4 +78,7 @@ private:
 	static std::vector<std::map<std::string, Symbol*>> symbol_table_vector;
 	static SymTypeInteger* integer_type;
 	static SymTypeFloat* float_type;
+
+	//static LexicalAnalyzer::Tokenizer* tokenizer;
+	//—сылка на неразрешЄнный внешний символ?
 };

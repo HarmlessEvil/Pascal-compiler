@@ -1,6 +1,7 @@
 var
-	x: floAt;
+	x: Integer;
+	y: Real;
 
 begin
-	x := 2.05;
+	x := x * y + 1;
 end.

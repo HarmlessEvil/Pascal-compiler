@@ -62,6 +62,16 @@ void Node::print()
 	print_tree(this, 0);
 }
 
+void Node::setType(SymType* type)
+{
+	this->symType = type;
+}
+
+SymType* Node::getType()
+{
+	return nullptr;
+}
+
 void Node::print_tree(Node* tree, int level)
 {
 	if (tree) {
@@ -90,6 +100,11 @@ ProgramNode::ProgramNode(Token* token, Node* heading, Node* body) : Node(token, 
 
 SimpleExpressionNode::SimpleExpressionNode(Token* token, Node* lhs, Node* rhs) : Node(token, lhs, rhs), additionalOperator(token->getSubType()), lhs(lhs), rhs(rhs) {}
 
+SymType* SimpleExpressionNode::getType()
+{
+	return lhs->getType()->commonType(rhs->getType());
+}
+
 SimpleConstantExpressionNode::SimpleConstantExpressionNode(Token* token, Node* lhs, Node* rhs) : Node(token, lhs, rhs), additionalOperator(token->getSubType()), lhs(lhs), rhs(rhs) 
 {
 	this->constant = true;
@@ -97,16 +112,41 @@ SimpleConstantExpressionNode::SimpleConstantExpressionNode(Token* token, Node* l
 
 TermNode::TermNode(Token* token, Node* lhs, Node* rhs) : Node(token, lhs, rhs), lhs(lhs), rhs(rhs), multiplicationOperator(token->getSubType()) {}
 
+SymType* TermNode::getType()
+{
+	return lhs->getType()->commonType(rhs->getType());
+}
+
 ConstantTermNode::ConstantTermNode(Token* token, Node* lhs, Node* rhs) : Node(token, lhs, rhs), lhs(lhs), rhs(rhs), multiplicationOperator(token->getSubType()) 
 {
 	this->constant = true;
 }
 
-FactorNode::FactorNode(Token* token) : Node(token), type(token->getType()) {}
+FactorNode::FactorNode(Token* token, SymType* symType) : Node(token), type(token->getType()) {
+	this->symType = symType;
+}
+
+SymType* FactorNode::getType()
+{
+	return symType;
+}
 
 ConstantFactorNode::ConstantFactorNode(Token* token) : Node(token), type(token->getType()) 
 {
 	this->constant = true;
+}
+
+SymType* ConstantFactorNode::getType()
+{
+	if (type == LexicalAnalyzer::INTEGER_LITERAL) {
+		return SemanticAnalyzer::getIntegerType();
+	}
+	else {
+		return SemanticAnalyzer::getFloatType();
+	}
+
+	//Несовместимые типы операндов: SymTypeInteger* и SymTypeFloat* --- ??
+	//return type == LexicalAnalyzer::INTEGER_LITERAL ? SemanticAnalyzer::getIntegerType() : SemanticAnalyzer::getFloatType();
 }
 
 StatementPartNode::StatementPartNode(Token* token, vector<Node*>* statements) : Node(token, statements) {}
@@ -115,18 +155,13 @@ AssignmentNode::AssignmentNode(Token* token, Node* lhs, Node* rhs) : Node(token,
 
 EntireVariableNode::EntireVariableNode(Token* token) : Node(token) {}
 
-Symbol* Node::setSymbol(Symbol* symbol)
+SymType* EntireVariableNode::getType()
 {
-	if (!symbol) {
-		SemanticAnalyzer::throwError(this->token->getPositionInString(), ("Variable " + this->token->getText() + " is undefined").c_str());
+	if (this->symType == nullptr) {
+		this->symType = SemanticAnalyzer::getVariable(token->getText())->getType();
 	}
 
-	return this->symbol = symbol;
-}
-
-Symbol* Node::getSymbol()
-{
-	return this->symbol;
+	return this->symType;
 }
 
 EntireConstantVariableNode::EntireConstantVariableNode(Token* token) : Node(token) 

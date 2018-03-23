@@ -89,8 +89,10 @@ Node* SyntaxAnalizer::parseTerm()
 	Token* t = tokenizer->current();
 
 	while (t->getType() == MULTIPLICATION_OPERATOR) {
-		e = new TermNode(t, e, parseFactor());
+		Token* asterisk = t;
+
 		t = tokenizer->next();
+		e = new TermNode(asterisk, e, parseFactor());
 	}
 
 	return e;
@@ -126,7 +128,13 @@ Node* SyntaxAnalizer::parseFactor()
 	}
 	if (type == INTEGER_LITERAL || type == FLOAT_LITERAL || type == STRING_LITERAL || type == NIL) {
 		tokenizer->next();
-		return new FactorNode(t);
+		switch (type) {
+		case INTEGER_LITERAL:
+			return new FactorNode(t, SemanticAnalyzer::getIntegerType());
+
+		case  FLOAT_LITERAL:
+			return new FactorNode(t, SemanticAnalyzer::getFloatType());
+		}
 	}
 	else if (type == LBRACE) {
 		Node* e = parseSimpleExpression();
@@ -282,22 +290,16 @@ Node* SyntaxAnalizer::parseAssignmentStatement()
 
 	Token* t = tokenizer->current();
 	if (t->getType() != ASSIGNMENT_OPERATOR) {
-		//Avoid rvalue
-		if (t->getType() == LBRACE) {
-			return variable->attach(parseProcedureStatement());
-		}
-		
-		throwError(t->getPositionInString(), "Illegal exprression");
+		throwError(t->getPositionInString(), "Illegal expression");
 	}
-	
+
 	tokenizer->next();
-	assignment = new AssignmentNode(t, variable, parseExpression());
+	Node* expression = parseExpression();
+	assignment = new AssignmentNode(t, variable, expression);
 
-	Token* token = variable->get_token();
-	string var_name = token->getText();
-	SymVar* symbol = static_cast<SymVar*>(variable->setSymbol(SemanticAnalyzer::getSymbol(var_name)));
-
-	symbol->isCompatibleTo(assignment->children->at(1)->get_token());
+	if (!variable->getType()->isCompatibleTo(expression->getType())) {
+		throwError(t->getPositionInString(), "Incompatible types", "Semantic error");
+	}
 
 	return assignment;
 }
@@ -318,6 +320,12 @@ Node* SyntaxAnalizer::parseVariable()
 	if (field) {
 		return variable->attach(field);
 	}
+
+	Token* t = tokenizer->current();
+	if (t->getType() == LBRACE) {
+		return variable->attach(parseProcedureStatement());
+	}
+
 	return variable;
 }
 
@@ -731,7 +739,7 @@ Node* SyntaxAnalizer::parseConstantDefinitionPart()
 	return new ConstantDefinitionPartNode(t, constants);
 }
 
-Node * SyntaxAnalizer::parseVarDefinitionPart()
+Node* SyntaxAnalizer::parseVarDefinitionPart()
 {
 	Token* t = tokenizer->current();
 	Node* var;
@@ -740,16 +748,10 @@ Node * SyntaxAnalizer::parseVarDefinitionPart()
 	while (var = parseVarDefinition()) {
 		Token* type = var->children->at(0)->get_token();
 		vector<Node*>* var_names = var->children->at(1)->children;
-		Symbol* symVar;
 
 		for (auto it = var_names->begin(); it != var_names->end(); it++) {
 			Token* token = (*it)->get_token();
-
-			if (!(symVar = SemanticAnalyzer::addVariable(token->getText(), type))) {
-				throwError(token->getPositionInString(), "Duplicate declaration of variable", "Sematic error");
-			}
-
-			var->setSymbol(symVar);
+			SemanticAnalyzer::addVariable(token->getText(), type);
 		}
 
 		vars->push_back(var);

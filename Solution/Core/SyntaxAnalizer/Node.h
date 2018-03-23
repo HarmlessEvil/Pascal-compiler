@@ -3,7 +3,6 @@
 #include <string>
 #include <vector>
 
-#include "../Tokenizer/Token.h"
 #include "../SemanticAnalyzer/SemanticAnalyzer.h"
 
 enum NodeType { INTEGER_NODE, REAL_NODE };
@@ -20,16 +19,13 @@ public:
 	std::vector<Node*>* children;
 	Node* attach(Node*);
 
-	Symbol* setSymbol(Symbol*);
-	Symbol* getSymbol();
+	virtual void setType(SymType*);
+	virtual SymType* getType();
 
 	LexicalAnalyzer::Token* get_token();
 
 	bool isConstant();
 	void print();
-	SymType* getType() {
-		return nullptr;
-	}
 
 protected:
 	LexicalAnalyzer::Token* token;
@@ -37,8 +33,7 @@ protected:
 	bool constant = false;
 	void print_tree(Node*, int);
 
-private:
-	Symbol* symbol;
+	SymType* symType;
 };
 
 class ProgramHeadingNode : public Node {
@@ -58,6 +53,8 @@ private:
 class SimpleExpressionNode : public Node {
 public:
 	SimpleExpressionNode(LexicalAnalyzer::Token*, Node*, Node*);
+
+	SymType* getType();
 private:
 	Node *lhs, *rhs;
 	LexicalAnalyzer::TokenType additionalOperator;
@@ -74,6 +71,8 @@ private:
 class TermNode : public Node {
 public:
 	TermNode(LexicalAnalyzer::Token*, Node*, Node*);
+
+	SymType* getType();
 private:
 	Node *lhs, *rhs;
 	LexicalAnalyzer::TokenType multiplicationOperator;
@@ -89,7 +88,9 @@ private:
 
 class FactorNode : public Node {
 public:
-	FactorNode(LexicalAnalyzer::Token*);
+	FactorNode(LexicalAnalyzer::Token*, SymType*);
+
+	SymType* getType();
 private:
 	LexicalAnalyzer::TokenType type;
 };
@@ -97,9 +98,10 @@ private:
 class ConstantFactorNode : public Node {
 public:
 	ConstantFactorNode(LexicalAnalyzer::Token*);
+
+	SymType* getType();
 private:
 	LexicalAnalyzer::TokenType type;
-	SymType * getType() { return type == INTEGER_LITERAL ? integer1 : float1;  }
 };
 
 class StatementPartNode : public Node {
@@ -117,6 +119,8 @@ private:
 class EntireVariableNode : public Node {
 public:
 	EntireVariableNode(LexicalAnalyzer::Token*);
+
+	SymType* getType();
 };
 
 class EntireConstantVariableNode : public Node {
