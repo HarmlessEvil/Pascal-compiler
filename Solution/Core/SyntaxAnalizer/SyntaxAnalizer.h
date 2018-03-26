@@ -55,6 +55,7 @@ private:
 	Node* parseVarDefinition();
 	Node* parseType();
 	Node* parseArrayDefinition();
+	Node* parseLiteral(LexicalAnalyzer::Token*, bool = false);
 
 	static const std::unordered_set<std::string> builtInTypes;
 

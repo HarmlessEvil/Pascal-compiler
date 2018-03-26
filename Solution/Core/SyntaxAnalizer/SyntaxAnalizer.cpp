@@ -126,15 +126,8 @@ Node* SyntaxAnalizer::parseFactor()
 			return var;
 		}
 	}
-	if (type == INTEGER_LITERAL || type == FLOAT_LITERAL || type == STRING_LITERAL || type == NIL) {
-		tokenizer->next();
-		switch (type) {
-		case INTEGER_LITERAL:
-			return new FactorNode(t, SemanticAnalyzer::getIntegerType());
-
-		case  FLOAT_LITERAL:
-			return new FactorNode(t, SemanticAnalyzer::getFloatType());
-		}
+	if (Node* literalNode = parseLiteral(t)) {
+		return literalNode;
 	}
 	else if (type == LBRACE) {
 		Node* e = parseSimpleExpression();
@@ -144,6 +137,9 @@ Node* SyntaxAnalizer::parseFactor()
 		}
 
 		return e;
+	}
+	else if (type == ADDITION_OPERATOR) {
+		return parseLiteral(tokenizer->next(), t->getSubType() == MINUS_OPERATOR);
 	}
 
 	if (t->getType() == ENDOFFILE) {
@@ -228,6 +224,8 @@ Node* SyntaxAnalizer::parseStatementPart()
 	}
 
 	statements = new StatementPartNode(t, parseStatementSequence());
+	statements->generate();
+	AsmCode::print();
 
 	t = tokenizer->current();
 	if (t->getType() == SEMICOLON) {
@@ -272,11 +270,11 @@ Node* SyntaxAnalizer::parseStatement()
 Node* SyntaxAnalizer::parseSimpleStatement()
 {
 	Node* statement = parseAssignmentStatement();
-	if (statement) {
-		return statement;
+	if (!statement) {
+		return NULL;
 	}
 
-	return NULL;
+	return statement;
 }
 
 Node* SyntaxAnalizer::parseAssignmentStatement()
@@ -290,7 +288,7 @@ Node* SyntaxAnalizer::parseAssignmentStatement()
 
 	Token* t = tokenizer->current();
 	if (t->getType() != ASSIGNMENT_OPERATOR) {
-		throwError(t->getPositionInString(), "Illegal expression");
+		return variable;
 	}
 
 	tokenizer->next();
@@ -323,7 +321,7 @@ Node* SyntaxAnalizer::parseVariable()
 
 	Token* t = tokenizer->current();
 	if (t->getType() == LBRACE) {
-		return variable->attach(parseProcedureStatement());
+		return variable->attach(parseProcedureStatement(), true);
 	}
 
 	return variable;
@@ -878,6 +876,41 @@ Node* SyntaxAnalizer::parseArrayDefinition()
 	Node* type = parseType();
 
 	return new Node(arr, new Node(brace, dimensions), new Node(of, type));
+}
+
+Node* SyntaxAnalizer::parseLiteral(LexicalAnalyzer::Token* t, bool inverse)
+{
+	LexicalAnalyzer::TokenType type = t->getType();
+
+	if (type == INTEGER_LITERAL || type == FLOAT_LITERAL || type == STRING_LITERAL || type == NIL) {
+		tokenizer->next();
+
+		if (inverse) {
+			int* value = static_cast<int*>(t->getValue());
+			int new_value = -*value;
+
+			t->setValue(&new_value);
+
+			ostringstream val;
+			val << new_value;
+
+			t->setText(val.str());
+		}
+
+		switch (type) {
+		case INTEGER_LITERAL:
+			return new FactorNode(t, SemanticAnalyzer::getIntegerType());
+
+		case  FLOAT_LITERAL:
+			return new FactorNode(t, SemanticAnalyzer::getFloatType());
+
+		default:
+			return NULL;
+		}
+	}
+	else {
+		return NULL;
+	}
 }
 
 void SyntaxAnalizer::throwError(Token::StringCoord pos, char* text, string type)

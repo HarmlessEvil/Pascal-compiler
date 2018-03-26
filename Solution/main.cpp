@@ -25,6 +25,7 @@ int main(int argc, char* argv[]) {
 		}
 		else {
 			source_code = new ifstream(argv[i]);
+			AsmCode::set_output_path(argv[i]);
 		}
 	}
 	if (source_code == NULL) {
@@ -72,7 +73,7 @@ int main(int argc, char* argv[]) {
 
 void help() {
 	cout << "Pascal compiler" << endl;
-	cout << "Author: Alexander Chori<alexandrchori@gmail.com>, 2017" << endl;
+	cout << "Author: Alexander Chori<alexandrchori@gmail.com>, 2017-2018" << endl;
 	cout << "Usage: pascal.exe [/l] [/s] file_name" << endl;
 	cout << "  /l - lexical analysis only" << endl;
 	cout << "  /s - syntax analysis only" << endl;

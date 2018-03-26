@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 
+#include "../CodeGenerator/Assembler.h"
 #include "../SemanticAnalyzer/SemanticAnalyzer.h"
 
 enum NodeType { INTEGER_NODE, REAL_NODE };
@@ -16,8 +17,12 @@ public:
 	Node(LexicalAnalyzer::Token*, Node*);
 	~Node();
 
+	virtual void generate();
+
 	std::vector<Node*>* children;
-	Node* attach(Node*);
+	virtual Node* attach(Node*, bool = false);
+
+	virtual void call();
 
 	virtual void setType(SymType*);
 	virtual SymType* getType();
@@ -31,6 +36,7 @@ protected:
 	LexicalAnalyzer::Token* token;
 
 	bool constant = false;
+	bool isCallable = false;
 	void print_tree(Node*, int);
 
 	SymType* symType;
@@ -55,6 +61,8 @@ public:
 	SimpleExpressionNode(LexicalAnalyzer::Token*, Node*, Node*);
 
 	SymType* getType();
+
+	void generate();
 private:
 	Node *lhs, *rhs;
 	LexicalAnalyzer::TokenType additionalOperator;
@@ -73,6 +81,8 @@ public:
 	TermNode(LexicalAnalyzer::Token*, Node*, Node*);
 
 	SymType* getType();
+
+	void generate();
 private:
 	Node *lhs, *rhs;
 	LexicalAnalyzer::TokenType multiplicationOperator;
@@ -91,6 +101,7 @@ public:
 	FactorNode(LexicalAnalyzer::Token*, SymType*);
 
 	SymType* getType();
+	void generate();
 private:
 	LexicalAnalyzer::TokenType type;
 };
@@ -107,6 +118,7 @@ private:
 class StatementPartNode : public Node {
 public:
 	StatementPartNode(LexicalAnalyzer::Token*, std::vector<Node*>*);
+	void generate();
 };
 
 class AssignmentNode : public Node {
@@ -121,6 +133,14 @@ public:
 	EntireVariableNode(LexicalAnalyzer::Token*);
 
 	SymType* getType();
+	void call();
+	void generate();
+
+	virtual Node* attach(Node*, bool = false);
+
+private:
+	std::vector<Node*>* parameters;
+	std::vector<SymType*>* parameterTypes;
 };
 
 class EntireConstantVariableNode : public Node {

@@ -1,13 +1,1 @@
-the program
-À--var
-|  À--:
-|  |  À--Real
-|  |  À--:
-|  |  |  À--x
-|  |  |  À--y
-À--block
-|  À--:=
-|  |  À--x
-|  |  À--*
-|  |  |  À--x
-|  |  |  À--y
+Semantic error : Types are incompatible

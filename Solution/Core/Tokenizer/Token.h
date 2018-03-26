@@ -32,6 +32,8 @@ namespace LexicalAnalyzer{
 		TokenType getSubType();
 		std::string getText();
 
+		void* getValue();
+
 		bool operator==(const char*);
 		bool operator!=(const char*);
 		

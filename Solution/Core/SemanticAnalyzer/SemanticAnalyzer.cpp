@@ -15,7 +15,8 @@ vector<map<string, Symbol*>> SemanticAnalyzer::symbol_table_vector = {
 	{
 		{ "integer", integer_type },
 		{ "float", float_type },
-		{ "real", float_type }
+		{ "real", float_type },
+		{ "writeln", new SymFunc("Writeln") }
 	},
 	{}
 };
@@ -58,6 +59,24 @@ SymVar* SemanticAnalyzer::getVariable(std::string name)
 	return var;
 }
 
+SymFunc* SemanticAnalyzer::getFunction(std::string name)
+{
+	SymFunc* func = nullptr;
+
+	try {
+		func = static_cast<SymFunc*>(getSymbol(name));
+
+		if (func == nullptr) {
+			throwError(("Variable " + name + " is undeclared").c_str());
+		}
+	}
+	catch (exception e) {
+		throwError(("Variable " + name + " is undeclared").c_str());
+	}
+
+	return func;
+}
+
 Symbol* SemanticAnalyzer::getSymbol(std::string name)
 {
 	transform(name.begin(), name.end(), name.begin(), ::tolower);
@@ -86,6 +105,17 @@ bool SemanticAnalyzer::symbolExistsInGlobalScope(string name)
 	}
 
 	return false;
+}
+
+size_t SemanticAnalyzer::getSymTableSize()
+{
+	size_t size = 0;
+
+	for (auto const &it : symbol_table_vector.back()) {
+		size += it.second->getSize();
+	}
+
+	return size_t();
 }
 
 SymTypeInteger *SemanticAnalyzer::getIntegerType()
@@ -153,6 +183,11 @@ SymType* SymTypeFloat::commonType(SymType* type)
 	return nullptr;
 }
 
+size_t SymTypeFloat::getSize()
+{
+	return 8;
+}
+
 SymTypeInteger::SymTypeInteger(std::string name) : SymTypeScalar(name) {}
 
 bool SymTypeInteger::isCompatibleTo(SymType* type)
@@ -175,6 +210,11 @@ SymType* SymTypeInteger::commonType(SymType* type)
 	}
 
 	return nullptr;
+}
+
+size_t SymTypeInteger::getSize()
+{
+	return 4;
 }
 
 Symbol::Symbol(string name)
@@ -201,6 +241,18 @@ SymType* SymType::commonType(SymType* type)
 	return this->commonType(type);
 }
 
+size_t Symbol::getSize()
+{
+	return 0;
+}
+
 SymVar::SymVar(string name, SymType* type) : Symbol(name) {
 	this->type = type;
+}
+
+SymFunc::SymFunc(std::string name) : Symbol(name) {}
+
+void SymFunc::act()
+{
+
 }

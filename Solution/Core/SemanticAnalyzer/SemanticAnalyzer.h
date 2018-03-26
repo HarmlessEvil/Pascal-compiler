@@ -10,6 +10,8 @@ class Symbol {
 public:
 	Symbol(std::string);
 
+	virtual size_t getSize();
+
 protected:
 	std::string name;
 };
@@ -26,12 +28,19 @@ public:
 	SymTypeScalar(std::string);
 };
 
+class SymFunc : public Symbol {
+public:
+	SymFunc(std::string);
+	void act();
+};
+
 class SymTypeFloat : public SymTypeScalar {
 public:
 	SymTypeFloat(std::string);
 
 	bool isCompatibleTo(SymType*);
 	SymType* commonType(SymType*);
+	size_t getSize();
 };
 
 class SymTypeInteger : public SymTypeScalar {
@@ -40,6 +49,7 @@ public:
 
 	bool isCompatibleTo(SymType*);
 	SymType* commonType(SymType*);
+	size_t getSize();
 };
 
 class SymVar : public Symbol {
@@ -56,12 +66,15 @@ class SemanticAnalyzer {
 public:
 	static SymVar* addVariable(std::string, LexicalAnalyzer::Token*);
 	static SymVar* getVariable(std::string);
+	static SymFunc* getFunction(std::string);
 
 	static Symbol* getSymbol(std::string);
 
 	static SymType* parseType(std::string);
 
 	static bool symbolExistsInGlobalScope(std::string);
+
+	static size_t getSymTableSize();
 
 	static SymTypeInteger* getIntegerType();
 	static SymTypeFloat* getFloatType();

@@ -111,6 +111,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Core\CodeGenerator\Assembler.cpp" />
     <ClCompile Include="Core\SemanticAnalyzer\SemanticAnalyzer.cpp" />
     <ClCompile Include="Core\SyntaxAnalizer\Node.cpp" />
     <ClCompile Include="Core\SyntaxAnalizer\SyntaxAnalizer.cpp" />
@@ -119,6 +120,7 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Core\CodeGenerator\Assembler.h" />
     <ClInclude Include="Core\SemanticAnalyzer\SemanticAnalyzer.h" />
     <ClInclude Include="Core\SyntaxAnalizer\Node.h" />
     <ClInclude Include="Core\SyntaxAnalizer\SyntaxAnalizer.h" />

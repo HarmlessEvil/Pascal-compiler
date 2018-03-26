@@ -33,6 +33,9 @@
     <ClCompile Include="Core\SemanticAnalyzer\SemanticAnalyzer.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
+    <ClCompile Include="Core\CodeGenerator\Assembler.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\Tokenizer\Tokenizer.h">
@@ -51,6 +54,9 @@
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
     <ClInclude Include="Core\SemanticAnalyzer\SemanticAnalyzer.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\CodeGenerator\Assembler.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
   </ItemGroup>

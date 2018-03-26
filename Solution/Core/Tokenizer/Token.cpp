@@ -235,6 +235,11 @@ std::string LexicalAnalyzer::Token::getText()
 	return this->text;
 }
 
+void* LexicalAnalyzer::Token::getValue()
+{
+	return this->value;
+}
+
 bool LexicalAnalyzer::Token::operator==(const char* c)
 {
 	return this->text.compare(c) == 0;
