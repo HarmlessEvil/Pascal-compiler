@@ -130,7 +130,8 @@ Node* SyntaxAnalizer::parseFactor()
 		return literalNode;
 	}
 	else if (type == LBRACE) {
-		Node* e = parseSimpleExpression();
+		tokenizer->next();
+		Node* e = parseExpression();
 		Token* rbrace = tokenizer->current();
 		if (!rbrace || rbrace->getType() != RBRACE) {
 			throwError(rbrace->getPositionInString(), "Unclosed brace");
@@ -209,6 +210,14 @@ vector<Node*>* SyntaxAnalizer::parseDeclarationPart(bool has_heading)
 		}
 
 		t = tokenizer->current();
+	}
+
+	for (auto &decl : *declarations) {
+		for (auto &type : *(decl->children)) {
+			for (auto &var : *(type->children->at(1))->children) {
+				var->generate();
+			}
+		}
 	}
 
 	return declarations;
@@ -529,13 +538,13 @@ Node* SyntaxAnalizer::parseIfStatement()
 
 	tokenizer->next();
 	Node* expression = parseExpression();
-	Token* t_then = tokenizer->current();
+	Token* t_then = tokenizer->next();
 	if (t_then->getType() != THEN_KEYWORD) {
 		throwError(t_then->getPositionInString(), "Missing 'then' keyword");
 	}
 
 	Node* statement = parseStatement();
-	Token* t_else = tokenizer->current();
+ 	Token* t_else = tokenizer->current();
 	if (t_else->getType() != ELSE_KEYWORD) {
 		return new IfNode(t, expression, new Node(t_then, statement));
 	}
@@ -875,6 +884,20 @@ Node* SyntaxAnalizer::parseArrayDefinition()
 	t = tokenizer->next();
 	Node* type = parseType();
 
+	static int counter = 0;
+	counter++;
+	ostringstream s;
+	s << "array" << counter;
+
+	int low, up = 100;
+	string range = dimensions->at(0)->get_token()->getText();
+	istringstream(range) >> low;
+	stringstream ss;
+	ss << low;
+	istringstream(range.substr(range.find(ss.str()) + 3)) >> up;
+
+	SemanticAnalyzer::addSymbol(s.str(), new SymTypeArray(SemanticAnalyzer::getIntegerType(), low, up));
+
 	return new Node(arr, new Node(brace, dimensions), new Node(of, type));
 }
 
@@ -886,15 +909,35 @@ Node* SyntaxAnalizer::parseLiteral(LexicalAnalyzer::Token* t, bool inverse)
 		tokenizer->next();
 
 		if (inverse) {
-			int* value = static_cast<int*>(t->getValue());
-			int new_value = -*value;
+			switch (type) {
+			case INTEGER_LITERAL: {
+				int* value = static_cast<int*>(t->getValue());
+				int new_value = -*value;
 
-			t->setValue(&new_value);
+				t->setValue(&new_value);
 
-			ostringstream val;
-			val << new_value;
+				ostringstream val;
+				val << new_value;
 
-			t->setText(val.str());
+				t->setText(val.str());
+
+				break;
+			}
+
+			case FLOAT_LITERAL: {
+				double* value = static_cast<double*>(t->getValue());
+				double new_value = -*value;
+
+				t->setValue(&new_value);
+
+				ostringstream val;
+				val << new_value;
+
+				t->setText(val.str());
+
+				break;
+			}
+			}
 		}
 
 		switch (type) {

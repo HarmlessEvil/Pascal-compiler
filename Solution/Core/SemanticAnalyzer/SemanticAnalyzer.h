@@ -8,6 +8,7 @@
 
 class Symbol {
 public:
+	Symbol();
 	Symbol(std::string);
 
 	virtual size_t getSize();
@@ -18,6 +19,7 @@ protected:
 
 class SymType : public Symbol {
 public:
+	SymType();
 	SymType(std::string);
 
 	virtual bool isCompatibleTo(SymType*);
@@ -52,11 +54,27 @@ public:
 	size_t getSize();
 };
 
+class SymTypeArray : public SymType {
+public:
+	SymTypeArray(SymType*, int, int);
+	bool isCompatibleTo(SymType*);
+
+	size_t getSize();
+	size_t getElementSize();
+	SymType* commonType(SymType*);
+
+private:
+	SymType* elemType;
+	int length;
+	int low, up;
+};
+
 class SymVar : public Symbol {
 public:
 	SymVar(std::string, SymType*);
 
 	SymType* getType();
+	size_t getSize();
 
 private:
 	SymType* type;
@@ -79,11 +97,15 @@ public:
 	static SymTypeInteger* getIntegerType();
 	static SymTypeFloat* getFloatType();
 
+	static void addSymbol(std::string, Symbol*);
+
 	//static void setTokenizer(LexicalAnalyzer::Tokenizer*);
 	//static LexicalAnalyzer::Tokenizer* getTokenizer();
 
 	static void throwError(LexicalAnalyzer::Token::StringCoord, const char*);
 	static void throwError(const char*);
+
+	static SymTypeArray* last_array;
 
 private:
 	static bool symbolExistsInLocalScope(std::string);

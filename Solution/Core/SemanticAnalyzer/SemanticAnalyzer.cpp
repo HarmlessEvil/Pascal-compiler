@@ -10,6 +10,7 @@ using namespace LexicalAnalyzer;
 
 SymTypeInteger* SemanticAnalyzer::integer_type = new SymTypeInteger("Integer");
 SymTypeFloat* SemanticAnalyzer::float_type = new SymTypeFloat("Float");
+SymTypeArray* SemanticAnalyzer::last_array = nullptr;
 
 vector<map<string, Symbol*>> SemanticAnalyzer::symbol_table_vector = {
 	{
@@ -28,6 +29,13 @@ SymVar* SemanticAnalyzer::addVariable(std::string name, Token* token_type)
 
 		s << "Variable " << name << " is already defined";
 		throwError(token_type->getPositionInString(), s.str().c_str());
+	}
+
+	if (token_type->getType() == ARRAY_HEADING) {
+		SymVar* var = new SymVar(name, last_array);
+		symbol_table_vector.back()[name] = var;
+
+		return var;
 	}
 
 	if (SymType* type = parseType(token_type->getText())) {
@@ -115,7 +123,7 @@ size_t SemanticAnalyzer::getSymTableSize()
 		size += it.second->getSize();
 	}
 
-	return size_t();
+	return size;
 }
 
 SymTypeInteger *SemanticAnalyzer::getIntegerType()
@@ -126,6 +134,15 @@ SymTypeInteger *SemanticAnalyzer::getIntegerType()
 SymTypeFloat *SemanticAnalyzer::getFloatType()
 {
 	return float_type;
+}
+
+void SemanticAnalyzer::addSymbol(string name, Symbol* sym)
+{
+	if (name.find("array") != string::npos) {
+		last_array = static_cast<SymTypeArray*>(sym);
+	}
+
+	symbol_table_vector.back()[name] = sym;
 }
 
 /*void SemanticAnalyzer::setTokenizer(LexicalAnalyzer::Tokenizer* tokenizer) 
@@ -217,6 +234,8 @@ size_t SymTypeInteger::getSize()
 	return 4;
 }
 
+Symbol::Symbol() {}
+
 Symbol::Symbol(string name)
 {
 	this->name = name;
@@ -227,7 +246,14 @@ SymType* SymVar::getType()
 	return this->type;
 }
 
+size_t SymVar::getSize()
+{
+	return this->type->getSize();
+}
+
 SymTypeScalar::SymTypeScalar(string name) : SymType(name) {}
+
+SymType::SymType() {}
 
 SymType::SymType(string name) : Symbol(name) {}
 
@@ -255,4 +281,26 @@ SymFunc::SymFunc(std::string name) : Symbol(name) {}
 void SymFunc::act()
 {
 
+}
+
+SymTypeArray::SymTypeArray(SymType* type, int low, int up) : elemType(type), length(up - low), up(up), low(low) {}
+
+bool SymTypeArray::isCompatibleTo(SymType* type)
+{
+	return elemType == type;
+}
+
+size_t SymTypeArray::getSize()
+{
+	return length * this->elemType->getSize();
+}
+
+size_t SymTypeArray::getElementSize()
+{
+	return elemType->getSize();
+}
+
+SymType* SymTypeArray::commonType(SymType* type)
+{
+	return type;
 }

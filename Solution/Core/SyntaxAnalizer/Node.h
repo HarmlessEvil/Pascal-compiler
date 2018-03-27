@@ -17,7 +17,8 @@ public:
 	Node(LexicalAnalyzer::Token*, Node*);
 	~Node();
 
-	virtual void generate();
+	virtual void generate(bool = false);
+	virtual void pushValueToStack();
 
 	std::vector<Node*>* children;
 	virtual Node* attach(Node*, bool = false);
@@ -62,7 +63,7 @@ public:
 
 	SymType* getType();
 
-	void generate();
+	void generate(bool = false);
 private:
 	Node *lhs, *rhs;
 	LexicalAnalyzer::TokenType additionalOperator;
@@ -82,7 +83,7 @@ public:
 
 	SymType* getType();
 
-	void generate();
+	void generate(bool = false);
 private:
 	Node *lhs, *rhs;
 	LexicalAnalyzer::TokenType multiplicationOperator;
@@ -101,7 +102,7 @@ public:
 	FactorNode(LexicalAnalyzer::Token*, SymType*);
 
 	SymType* getType();
-	void generate();
+	void generate(bool = false);
 private:
 	LexicalAnalyzer::TokenType type;
 };
@@ -118,12 +119,16 @@ private:
 class StatementPartNode : public Node {
 public:
 	StatementPartNode(LexicalAnalyzer::Token*, std::vector<Node*>*);
-	void generate();
+	void generate(bool = false);
 };
 
 class AssignmentNode : public Node {
 public:
 	AssignmentNode(LexicalAnalyzer::Token*, Node*, Node*);
+
+	SymType* getType();
+
+	void generate(bool = false);
 private:
 	Node *lhs, *rhs;
 };
@@ -134,13 +139,19 @@ public:
 
 	SymType* getType();
 	void call();
-	void generate();
+	void generate(bool = false);
+	void pushValueToStack();
 
 	virtual Node* attach(Node*, bool = false);
 
 private:
 	std::vector<Node*>* parameters;
 	std::vector<SymType*>* parameterTypes;
+};
+
+class ArrayNode : public Node {
+public:
+	ArrayNode(LexicalAnalyzer::Token*, Node*, Node*);
 };
 
 class EntireConstantVariableNode : public Node {
@@ -151,6 +162,8 @@ public:
 class ExpressionNode : public Node {
 public:
 	ExpressionNode(LexicalAnalyzer::Token*, Node*, Node*);
+
+	void generate(bool = false);
 private:
 	LexicalAnalyzer::TokenType relationalOperator;
 	Node *lexpr, *rexpr;
@@ -195,6 +208,8 @@ class IfNode : public Node {
 public:
 	IfNode(LexicalAnalyzer::Token*, Node*, Node*);
 	IfNode(LexicalAnalyzer::Token*, std::vector<Node*>*);
+
+	void generate(bool = false);
 private:
 	Node *condition, *expressionIfCondition, *elseExpression;
 };

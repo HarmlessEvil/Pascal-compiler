@@ -10,8 +10,10 @@ vector<AsmElement*> AsmCode::code_section = {};
 
 string AsmCode::output_path = "";
 
-AsmElement::AsmElement(string name) : name(name) {}
+map<double, string> AsmCode::double_consts = {};
+map<string, int> AsmCode::variables = {};
 
+AsmElement::AsmElement(string name) : name(name) {}
 string AsmElement::print()
 {
 	return string();
@@ -25,6 +27,49 @@ void AsmCode::addCode(AsmElement* element)
 void AsmCode::addConstant(AsmConstant* constant)
 {
 	const_section.push_back(constant);
+}
+
+int AsmCode::getOrCreateVariable(std::string name, int size)
+{
+	static int offset = 4;
+
+	if (auto it = variables.find(name) != variables.end()) {
+		return variables[name];
+	}
+
+	offset += size;
+	variables[name] = offset;
+
+	return -1;
+}
+
+std::string AsmCode::getOrCreateDoubleConstant(const double value)
+{
+	auto it = double_consts.find(value);
+	if (it != double_consts.end()) {
+		return std::string("__real@") + it->second;
+	}
+
+	std::string result;
+	auto mask = uint64_t(15) << 60;
+	const auto val = *reinterpret_cast<const uint64_t*>(&value);
+
+	for (auto i = 0; i < sizeof(value) * 2; ++i) {
+		const unsigned char c = static_cast<const unsigned char>((val & mask) >> (60 - i * 4));
+
+		result += c + (c < 10 ? 48 : 87);
+		mask >>= 4;
+	}
+
+	if (result[0] >= 97) {
+		result.insert(result.begin(), '0');
+	}
+
+	double_consts[value] = result;
+	std::string name = std::string("__real@") + result;
+	AsmCode::addConstant(new AsmConstant(name, "dq", result + "r"));
+
+	return name;
 }
 
 void AsmCode::print()
@@ -77,12 +122,24 @@ std::string AsmCode::get_register_verbose_name(RegisterType reg)
 	case EDX:
 		return "edx";
 
+	case AL:
+		return "al";
+
+	case AH:
+		return "ah";
+
 	case EBP:
 		return "ebp";
 
 	case ESP:
 		return "esp";
 
+	case XMM0:
+		return "xmm0";
+
+	case XMM1:
+		return "xmm1";
+			
 	default:
 		return "";
 	}
@@ -107,6 +164,11 @@ AsmCommand::AsmCommand(std::string name, RegisterType reg) : AsmElement(name), a
 	this->name = name + " " + AsmCode::get_register_verbose_name(reg);
 }
 
+AsmCommand::AsmCommand(std::string name, Ptr *ptr) : AsmElement(name), argc(0)
+{
+	this->name = name +  " " + ptr->print();
+}
+
 AsmCommand::AsmCommand(std::string name, int lval, int rval) : AsmElement(name), argc(2)
 {
 	args[0] = lval;
@@ -117,6 +179,16 @@ AsmCommand::AsmCommand(std::string name, RegisterType reg, int val) : AsmElement
 {
 	this->name = name + " " + AsmCode::get_register_verbose_name(reg) + ",";
 	args[0] = val;
+}
+
+AsmCommand::AsmCommand(std::string name, RegisterType reg, Ptr* ptr) : AsmElement(name), argc(0)
+{
+	this->name = name + " " + AsmCode::get_register_verbose_name(reg) + ", " + ptr->print();
+}
+
+AsmCommand::AsmCommand(std::string name, Ptr* ptr, RegisterType reg) : AsmElement(name), argc(0)
+{
+	this->name = name + " " + ptr->print() + ", " + AsmCode::get_register_verbose_name(reg);
 }
 
 AsmCommand::AsmCommand(std::string name, RegisterType from, RegisterType to) : AsmElement(name), argc(0)
@@ -145,4 +217,31 @@ AsmConstant::AsmConstant(std::string name, std::string dx, std::string content) 
 std::string AsmConstant::print()
 {
 	return name + " " + dx + " " + content;
+}
+
+Ptr::Ptr(RegisterType reg) : target(AsmCode::get_register_verbose_name(reg)) {}
+
+Ptr::Ptr(string target) : target(target) {}
+
+std::string Ptr::print()
+{
+	return std::string();
+}
+
+DwordPtr::DwordPtr(RegisterType reg) : Ptr(reg) {}
+
+DwordPtr::DwordPtr(string target) : Ptr(target) {}
+
+std::string DwordPtr::print()
+{
+	return "dword ptr [" + this->target + "]";
+}
+
+QwordPtr::QwordPtr(RegisterType reg) : Ptr(reg) {}
+
+QwordPtr::QwordPtr(string target) : Ptr(target) {}
+
+std::string QwordPtr::print()
+{
+	return "qword ptr [" + this->target + "]";
 }
